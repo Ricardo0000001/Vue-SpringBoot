@@ -30,7 +30,8 @@
   </div>
 </template>
 
-<script>import { XTable, Divider, XHeader, XButton, Flexbox, FlexboxItem, Grid, GridItem } from 'vux'
+<script>import { MessageBox } from 'mint-ui'
+import { XTable, Divider, XHeader, XButton, Flexbox, FlexboxItem, Grid, GridItem } from 'vux'
 export default {
   name: 'Home',
   data: function () {
@@ -130,6 +131,12 @@ export default {
     async getNameAndDepart () {
       var _this = this
       // this.openid = this.$route.params.openid
+      if (this.$route.query.token === undefined) {
+        console.log('unlawful sign in!')
+        MessageBox.alert('非法访问！请先登录！').then(action => {
+
+        })
+      }
       this.openid = this.$route.query.token
       console.log('print the openid:', this.$route.query.token)
       var param = {'openid': this.openid}
