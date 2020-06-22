@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.eworldlink.api.customerManage.mapper.CustomerManagePermitMapper">
+    <resultMap id="customerManagePermitEntity" type="com.eworldlink.api.customerManage.entity.CustomerManagePermitEntity">
+    </resultMap>
+    <select id="judgePermitMapper" parameterType="java.util.Map" resultMap="customerManagePermitEntity">
+        select * from tab_conclusion_permit where name=#{username}
+    </select>
+
+</mapper>

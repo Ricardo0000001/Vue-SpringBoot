@@ -1,0 +1,587 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.eworldlink.api.customerManage.mapper.CustomerManageMapper">
+    <resultMap id="customerManageEntity" type="com.eworldlink.api.customerManage.entity.CustomerManageEntity">
+    </resultMap>
+
+<!--    outline的全部选择-->
+<!--    <![CDATA[-->
+<!--            select * from tab_conclusion_table  where 1=1-->
+<!--        ]]>-->
+
+<!--    <if test="merchantStaff != null and merchantStaff != ''">-->
+<!--        AND merchantStaff = #{merchantStaff}-->
+<!--    </if>-->
+
+<!--    <if test="merchantDepartment != null and merchantDepartment != ''">-->
+<!--        AND merchantDepartment = #{merchantDepartment}-->
+<!--    </if>-->
+
+<!--    <if test="clientstate != null and clientstate != ''">-->
+<!--        AND clientstate = #{clientstate}-->
+<!--    </if>-->
+
+<!--    <if test="start != null and start != ''">-->
+<!--        AND datetime >= #{start, jdbcType=DATE}-->
+<!--    </if>-->
+
+<!--    <if test="end != null and end != ''">-->
+<!--        <![CDATA[-->
+<!--            AND datetime <  #{end, jdbcType=DATE}-->
+<!--            ]]>-->
+<!--    </if>-->
+
+<!--    ORDER BY datetime desc-->
+    <select id="selectDepartOrStateOrStartOrEnd" parameterType="java.util.Map" resultMap="customerManageEntity">
+        select 	m.id,
+				n.datetime,
+				n.clientname,
+				m.clientStyle,
+				m.contactNumber,
+				m.contactStaff,
+				m.personTitle,
+				m.sourceChannel,
+				m.needSquare,
+				m.wantPark,
+				m.wantBuilding,
+				m.predictdealtime,
+				m.currentProblem,
+				m.requiredsupport,
+				m.currentLevel,
+				n.merchantStaff,
+				m.merchantDepartment,
+				m.price,
+				m.clientstate,
+				m.clientinfo,
+				m.phoneVisit,
+				m.takeVisit,
+				m.createtime
+				from ((select a.clientname, a.merchantStaff, a.merchantDepartment, a.clientstate, max(a.datetime) as datetime, max(a.createtime) as createtime
+        from tab_conclusion_table a
+
+        where 1=1
+        <if test="merchantStaff != null and merchantStaff != ''">
+            AND merchantStaff = #{merchantStaff}
+        </if>
+
+        <if test="merchantDepartment != null and merchantDepartment != ''">
+            AND merchantDepartment = #{merchantDepartment}
+        </if>
+
+        <if test="clientstate != null and clientstate != ''">
+            AND clientstate = #{clientstate}
+        </if>
+
+        <if test="start != null and start != ''">
+            AND datetime >= #{start, jdbcType=DATE}
+        </if>
+
+        <if test="end != null and end != ''">
+            <![CDATA[
+                    AND datetime <  #{end, jdbcType=DATE}
+                ]]>
+        </if>
+
+        GROUP BY a.clientname, a.merchantStaff, a.merchantDepartment, a.clientstate) n
+		left join
+		(select * from tab_conclusion_table
+		    where 1=1
+            <if test="merchantStaff != null and merchantStaff != ''">
+                AND merchantStaff = #{merchantStaff}
+            </if>
+
+            <if test="merchantDepartment != null and merchantDepartment != ''">
+                AND merchantDepartment = #{merchantDepartment}
+            </if>
+
+            <if test="clientstate != null and clientstate != ''">
+                AND clientstate = #{clientstate}
+            </if>
+
+            <if test="start != null and start != ''">
+                AND datetime >= #{start, jdbcType=DATE}
+            </if>
+
+            <if test="end != null and end != ''">
+                <![CDATA[
+                    AND datetime <  #{end, jdbcType=DATE}
+                ]]>
+            </if>
+		) m
+		on n.createtime = m.createtime)
+		GROUP BY
+				m.id,
+				n.datetime,
+				n.clientname,
+				m.clientStyle,
+				m.contactNumber,
+				m.contactStaff,
+				m.personTitle,
+				m.sourceChannel,
+				m.needSquare,
+				m.wantPark,
+				m.wantBuilding,
+				m.predictdealtime,
+				m.currentProblem,
+				m.requiredsupport,
+				m.currentLevel,
+				n.merchantStaff,
+				m.merchantDepartment,
+				m.price,
+				m.clientstate,
+				m.clientinfo,
+				m.phoneVisit,
+				m.takeVisit,
+				m.createtime
+                ORDER BY datetime DESC
+    </select>
+
+<!--    SELECT  a.datetime,-->
+<!--    a.clientname,-->
+<!--    a.datetime,-->
+<!--    a.takeVisit,-->
+<!--    a.phoneVisit,-->
+<!--    a.clientStyle,-->
+<!--    a.contactNumber,-->
+<!--    a.contactStaff,-->
+<!--    a.personTitle,-->
+<!--    a.sourceChannel,-->
+<!--    a.needSquare,-->
+<!--    a.wantPark,-->
+<!--    a.wantBuilding,-->
+<!--    a.predictdealtime,-->
+<!--    a.currentproblem,-->
+<!--    a.requiredsupport,-->
+<!--    a.currentLevel,-->
+<!--    a.clientinfo,-->
+<!--    a.merchantStaff,-->
+<!--    a.merchantDepartment,-->
+<!--    a.price,-->
+<!--    a.clientstate,-->
+<!--    a.clientinfo,-->
+<!--    b.createtime-->
+<!--    FROM tab_conclusion_table a-->
+<!--    right join-->
+<!--    (select clientname, max(createtime) as createtime-->
+<!--    FROM tab_conclusion_table-->
+<!--    where clientname like "%"#{keywords}"%"-->
+<!--    group by clientname) b-->
+<!--    on a.createtime = b.createtime and a.clientname=b.clientname-->
+<!--    ORDER BY createtime DESC-->
+    <select id="selectOutlineSearch" parameterType="java.util.Map" resultType="java.util.Map">
+    select * from tab_conclusion_table where clientname like "%"#{keywords}"%" ORDER BY datetime desc
+    </select>
+
+<!--    <select id="selectValidClientInfo" parameterType="java.util.Map" resultMap="customerManageEntity">-->
+<!--        <![CDATA[-->
+<!--            select * from tab_conclusion_table  where 1=1-->
+<!--        ]]>-->
+
+<!--        <if test="merchantDepartment != null and merchantDepartment != ''">-->
+<!--            AND merchantDepartment = #{merchantDepartment}-->
+<!--        </if>-->
+
+<!--        <if test="clientstate != null and clientstate != ''">-->
+<!--            AND clientstate = #{clientstate}-->
+<!--        </if>-->
+
+<!--        <if test="currentLevel != null and currentLevel != ''">-->
+<!--            AND currentLevel = #{currentLevel}-->
+<!--        </if>-->
+
+<!--        <if test="start != null and start != ''">-->
+<!--            AND createtime >= #{start}-->
+<!--        </if>-->
+
+<!--        <if test="end != null and end != ''">-->
+<!--            <![CDATA[-->
+<!--            AND createtime <  #{end}-->
+<!--            ]]>-->
+<!--        </if>-->
+
+<!--        ORDER BY createtime desc-->
+<!--&lt;!&ndash;    </select>&ndash;&gt;-->
+<!--有效客户明细表：-->
+<!--    SELECT  a.id,-->
+<!--    a.datetime,-->
+<!--    a.clientname,-->
+<!--    a.clientStyle,-->
+<!--    a.contactNumber,-->
+<!--    a.contactStaff,-->
+<!--    a.personTitle,-->
+<!--    a.sourceChannel,-->
+<!--    a.needSquare,-->
+<!--    a.wantPark,-->
+<!--    a.wantBuilding,-->
+<!--    a.predictdealtime,-->
+<!--    a.currentproblem,-->
+<!--    a.requiredsupport,-->
+<!--    a.currentLevel,-->
+<!--    a.merchantStaff,-->
+<!--    a.merchantDepartment,-->
+<!--    a.price,-->
+<!--    a.clientstate,-->
+<!--    a.clientinfo,-->
+<!--    a.b.phonevisitcount,-->
+<!--    a.b.takeVisitCount-->
+<!--    FROM tab_conclusion_table a-->
+<!--    left join-->
+<!--    (select clientname,-->
+<!--    count(if(phonevisit='是', TRUE, NULL)) AS phonevisitcount,-->
+<!--    COUNT(if(takeVisit='是',TRUE, NULL)) AS takeVisitCount-->
+<!--    FROM tab_conclusion_table-->
+<!--    group by clientname) b-->
+<!--    on a.clientname = b.clientname-->
+<!--    where 1=1-->
+<!--    <if test="merchantDepartment != null and merchantDepartment != ''">-->
+<!--        AND merchantDepartment = #{merchantDepartment}-->
+<!--    </if>-->
+
+<!--    <if test="clientstate != null and clientstate != ''">-->
+<!--        AND clientstate = #{clientstate}-->
+<!--    </if>-->
+
+<!--    <if test="currentLevel != null and currentLevel != ''">-->
+<!--        AND currentLevel = #{currentLevel}-->
+<!--    </if>-->
+
+<!--    <if test="start != null and start != ''">-->
+<!--        AND datetime >= #{start, jdbcType=TIMESTAMP}-->
+<!--    </if>-->
+
+<!--    <if test="end != null and end != ''">-->
+<!--        <![CDATA[-->
+<!--            AND datetime <  #{end, jdbcType=TIMESTAMP}-->
+<!--            ]]>-->
+<!--    </if>-->
+<!--    ORDER BY datetime desc-->
+
+<!--    有效客户明细表-->
+
+<!--    有效客户明细表-->
+<!--    select  p.id,-->
+<!--    p.merchantStaff,-->
+<!--    p.merchantDepartment,-->
+<!--    p.datetime,-->
+<!--    p.clientname,-->
+<!--    p.price,-->
+<!--    p.needSquare,-->
+<!--    q.phonevisitcount,-->
+<!--    q.takeVisitCount-->
+<!--    from-->
+<!--    (select m.id, n.merchantStaff, n.merchantDepartment, n.datetime, n.clientname, m.price, m.needSquare from-->
+<!--    (select clientname, merchantStaff, merchantDepartment, max(datetime) as datetime from tab_conclusion_table-->
+<!--    where 1=1-->
+<!--    <if test="merchantDepartment != null and merchantDepartment != ''">-->
+<!--        AND merchantDepartment = #{merchantDepartment}-->
+<!--    </if>-->
+
+<!--    <if test="clientstate != null and clientstate != ''">-->
+<!--        AND clientstate = #{clientstate}-->
+<!--    </if>-->
+
+<!--    <if test="currentLevel != null and currentLevel != ''">-->
+<!--        AND currentLevel = #{currentLevel}-->
+<!--    </if>-->
+
+<!--    <if test="start != null and start != ''">-->
+<!--        AND datetime >= #{start, jdbcType=TIMESTAMP}-->
+<!--    </if>-->
+
+<!--    <if test="end != null and end != ''">-->
+<!--        <![CDATA[-->
+<!--                            AND datetime <  #{end, jdbcType=TIMESTAMP}-->
+<!--                        ]]>-->
+<!--    </if>-->
+<!--    GROUP BY clientname, merchantStaff, merchantDepartment) n-->
+<!--    left join-->
+<!--    (select id, clientname,merchantStaff, max(datetime) as datetime, price, needSquare from tab_conclusion_table-->
+<!--    where 1=1-->
+<!--    <if test="merchantDepartment != null and merchantDepartment != ''">-->
+<!--        AND merchantDepartment = #{merchantDepartment}-->
+<!--    </if>-->
+
+<!--    <if test="clientstate != null and clientstate != ''">-->
+<!--        AND clientstate = #{clientstate}-->
+<!--    </if>-->
+
+<!--    <if test="currentLevel != null and currentLevel != ''">-->
+<!--        AND currentLevel = #{currentLevel}-->
+<!--    </if>-->
+
+<!--    <if test="start != null and start != ''">-->
+<!--        AND datetime >= #{start, jdbcType=TIMESTAMP}-->
+<!--    </if>-->
+
+<!--    <if test="end != null and end != ''">-->
+<!--        <![CDATA[-->
+<!--                            AND datetime <  #{end, jdbcType=TIMESTAMP}-->
+<!--                        ]]>-->
+<!--    </if>-->
+<!--    GROUP BY id, price, needSquare, clientname, merchantStaff) m-->
+<!--    on n.datetime=m.datetime and n.merchantStaff=m.merchantStaff AND n.clientname=m.clientname-->
+<!--    GROUP BY m.id, n.merchantStaff, n.merchantDepartment, n.datetime, n.clientname, m.price, m.needSquare) p-->
+<!--    left JOIN (select merchantStaff, clientname,max(datetime) as datetime, count(if(phonevisit='是', TRUE, NULL)) AS phonevisitcount, COUNT(if(takeVisit='是',TRUE, NULL)) AS takeVisitCount FROM tab_conclusion_table-->
+<!--    where 1=1-->
+<!--    <if test="merchantDepartment != null and merchantDepartment != ''">-->
+<!--        AND merchantDepartment = #{merchantDepartment}-->
+<!--    </if>-->
+
+<!--    <if test="clientstate != null and clientstate != ''">-->
+<!--        AND clientstate = #{clientstate}-->
+<!--    </if>-->
+
+<!--    <if test="currentLevel != null and currentLevel != ''">-->
+<!--        AND currentLevel = #{currentLevel}-->
+<!--    </if>-->
+
+<!--    <if test="start != null and start != ''">-->
+<!--        AND datetime >= #{start, jdbcType=TIMESTAMP}-->
+<!--    </if>-->
+
+<!--    <if test="end != null and end != ''">-->
+<!--        <![CDATA[-->
+<!--                        AND datetime <  #{end, jdbcType=TIMESTAMP}-->
+<!--                    ]]>-->
+<!--    </if>-->
+<!--    group by clientname, merchantStaff) q-->
+<!--    on p.merchantStaff=q.merchantStaff and p.datetime=q.datetime-->
+<!--    GROUP BY p.id, p.merchantStaff,p.merchantDepartment, p.clientname, p.datetime, p.price, p.needSquare, q.phonevisitcount, q.takeVisitCount-->
+<!--    order by datetime DESC-->
+    <select id="selectValidClientCompute" parameterType="java.util.Map" resultType="java.util.Map">
+        select  n.id,
+                m.merchantStaff,
+                m.merchantDepartment,
+                m.datetime,
+                m.clientname,
+                n.price,
+                n.needSquare,
+                m.phonevisitcount,
+                m.takeVisitCount from
+        (select merchantStaff,
+                merchantDepartment,
+                clientname,
+                max(datetime) as datetime,
+                max(createtime) as createtime,
+                count(if(phonevisit='是', TRUE, NULL)) AS phonevisitcount,
+                COUNT(if(takeVisit='是',TRUE, NULL)) AS takeVisitCount
+				FROM tab_conclusion_table
+                where 1=1
+                <if test="merchantStaff != null and merchantStaff != ''">
+                    AND merchantStaff = #{merchantStaff}
+                </if>
+
+                <if test="merchantDepartment != null and merchantDepartment != ''">
+                    AND merchantDepartment = #{merchantDepartment}
+                </if>
+
+                <if test="clientstate != null and clientstate != ''">
+                    AND clientstate = #{clientstate}
+                </if>
+
+                <if test="currentLevel != null and currentLevel != ''">
+                    AND currentLevel = #{currentLevel}
+                </if>
+
+                <if test="start != null and start != ''">
+                    AND datetime >= #{start, jdbcType=TIMESTAMP}
+                </if>
+
+                <if test="end != null and end != ''">
+                    <![CDATA[
+                            AND datetime <  #{end, jdbcType=TIMESTAMP}
+                    ]]>
+                </if>
+				group by clientname, merchantStaff, merchantDepartment) m
+			left join
+			(select id,
+			        price,
+			        needSquare,
+			        max(createtime) as createtime from tab_conclusion_table
+			        GROUP BY id, price, needSquare) n
+			    on m.createtime = n.createtime
+			group by    n.id,
+			            m.merchantStaff,
+			            m.merchantDepartment,
+			            m.clientname,
+			            n.price,
+			            n.needSquare,
+			            m.phonevisitcount,
+			            m.takeVisitCount
+			order by datetime DESC
+    </select>
+
+<!--    计算排名-->
+<!--    SELECT DISTINCT a.merchantStaff,a.merchantDepartment,a.b.clientCount-->
+<!--    from tab_conclusion_table a-->
+<!--    LEFT JOIN(SELECT merchantStaff,-->
+<!--    COUNT(DISTINCT clientname) AS clientCount-->
+<!--    FROM tab_conclusion_table-->
+<!--    where 1=1-->
+<!--    <if test="start != null and start != ''">-->
+<!--        AND datetime >= #{start, jdbcType=TIMESTAMP}-->
+<!--    </if>-->
+
+<!--    <if test="end != null and end != ''">-->
+<!--        <![CDATA[-->
+<!--            AND datetime <  #{end, jdbcType=TIMESTAMP}-->
+<!--            ]]>-->
+<!--    </if>-->
+<!--    GROUP BY merchantStaff) b-->
+<!--    on a.merchantStaff = b.merchantStaff-->
+<!--    where a.b.clientCount>=0-->
+<!--    ORDER BY clientCount DESC-->
+<!--计算排名-->
+    <select id="selectClientCountRank" parameterType="java.util.Map" resultType="java.util.Map">
+       select   n.merchantDepartment,
+                n.merchantStaff,
+                count(DISTINCT m.clientname) as clientCount,
+                sum(m.needSquare) as squareData from
+                (select clientname,
+                        max(datetime) as datetime,
+                        merchantDepartment,
+                        merchantStaff from tab_conclusion_table
+                         where 1=1
+                        <if test="start != null and start != ''">
+                        AND datetime >= #{start, jdbcType=TIMESTAMP}
+                         </if>
+
+                        <if test="end != null and end != ''">
+                            <![CDATA[
+                            AND datetime <  #{end, jdbcType=TIMESTAMP}
+                            ]]>
+                        </if>
+                         GROUP BY merchantStaff, merchantDepartment,clientname
+                        ) n
+                left join
+                (select a.merchantStaff,
+                        a.needSquare,
+                        b.clientname,
+                        a.merchantDepartment,
+                        b.datetime from tab_conclusion_table a
+                    right JOIN
+                    (select DISTINCT clientname,
+                                    merchantStaff,
+                                    max(datetime) as datetime from tab_conclusion_table
+                                     where 1=1
+                                    <if test="start != null and start != ''">
+                                     AND datetime >= #{start, jdbcType=TIMESTAMP}
+                                    </if>
+
+                                    <if test="end != null and end != ''">
+                                        <![CDATA[
+                                            AND datetime <  #{end, jdbcType=TIMESTAMP}
+                                        ]]>
+                                    </if>
+                                        GROUP BY clientname, merchantStaff,merchantDepartment) b
+                     on a.clientname=b.clientname and a.datetime=b.datetime) m
+                on n.merchantStaff=m.merchantStaff and n.clientname=m.clientname
+                group by n.merchantDepartment, n.merchantStaff
+                order by clientCount DESC
+    </select>
+
+    <select id="selectStatisDepart" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT DISTINCT a.merchantDepartment,
+                        a.b.newClientCount,
+                        a.b.newClientSquareSum,
+                        a.b.phoneVisitCount,
+                        a.b.takeVisitCount,
+                        a.c.oldClientCount,
+                        a.c.oldClientSquareSum
+                FROM tab_conclusion_table a
+                LEFT JOIN
+            (SELECT merchantDepartment,
+                COUNT(DISTINCT clientname) AS newClientCount,
+                SUM(needSquare) AS newClientSquareSum,
+                COUNT(if(phonevisit='是', TRUE, NULL)) AS phoneVisitCount,
+                COUNT(if(takeVisit='是',TRUE, NULL)) AS takeVisitCount
+            FROM tab_conclusion_table
+        where 1=1
+        <if test="department != null and department != ''">
+            AND merchantDepartment = #{department}
+        </if>
+
+        <if test="start != null and start != ''">
+            AND datetime >= #{start, jdbcType=TIMESTAMP}
+        </if>
+
+        <if test="end != null and end != ''">
+            <![CDATA[
+            AND datetime <=  #{end, jdbcType=TIMESTAMP}
+            ]]>
+        </if>
+            GROUP BY merchantDepartment) b
+            ON a.merchantDepartment = b.merchantDepartment
+                LEFT JOIN
+            (SELECT merchantDepartment,
+                COUNT(DISTINCT clientname) AS oldClientCount,
+                sum(needSquare) AS oldClientSquareSum
+            FROM tab_conclusion_table
+        where 1=1
+        <if test="department != null and department != ''">
+            AND merchantDepartment = #{department}
+        </if>
+
+        <if test="start != null and start != ''">
+        <![CDATA[
+            AND datetime <=  #{start, jdbcType=TIMESTAMP}
+            ]]>
+        </if>
+
+            GROUP BY merchantDepartment) c
+            ON a.merchantDepartment = c.merchantDepartment
+<!--        where 1=1-->
+<!--        <if test="department != null and department != ''">-->
+<!--            AND merchantDepartment = #{department}-->
+<!--        </if>-->
+            ORDER BY newClientCount DESC;
+<!--        SELECT 	DISTINCT a.merchantDepartment,-->
+<!--				a.c.newClientCount,-->
+<!--				a.b.oldClientCount,-->
+<!--				a.b.invalidClientCount,-->
+<!--				a.b.squareSum,-->
+<!--				a.b.phoneVisitCount,-->
+<!--                a.b.takeVisitCount-->
+<!--	    FROM tab_conclusion_table a-->
+<!--        LEFT JOIN-->
+<!--        (SELECT merchantDepartment,-->
+<!--	        COUNT(DISTINCT clientname) AS oldClientCount,-->
+<!--	        COUNT(IF(clientstate='无效', TRUE, NULL)) AS invalidClientCount,-->
+<!--	        SUM(needSquare) AS squareSum,-->
+<!--	        COUNT(if(phonevisit='是', TRUE, NULL)) AS phoneVisitCount,-->
+<!--            COUNT(if(takeVisit='是',TRUE, NULL)) AS takeVisitCount-->
+<!--	    FROM tab_conclusion_table-->
+<!--	    where 1=1-->
+<!--        <if test="start != null and start != ''">-->
+<!--            <![CDATA[-->
+<!--            AND createtime <  #{timepoint}-->
+<!--            ]]>-->
+<!--        </if>-->
+
+<!--        <if test="end != null and end != ''">-->
+<!--            <![CDATA[-->
+<!--            AND createtime <  #{timepoint}-->
+<!--            ]]>-->
+<!--        </if>-->
+<!--        GROUP BY merchantDepartment) b-->
+<!--	    ON a.merchantDepartment = b.merchantDepartment-->
+<!--        LEFT JOIN-->
+<!--        (SELECT merchantDepartment,-->
+<!--	        COUNT(DISTINCT clientname) AS newClientCount-->
+<!--	    FROM tab_conclusion_table-->
+<!--	    where 1=1-->
+<!--        <if test="timepoint != null and timepoint != ''">-->
+<!--            AND createtime >= #{timepoint}-->
+<!--        </if>-->
+<!--	    GROUP BY merchantDepartment) c-->
+<!--	    on a.merchantDepartment = c.merchantDepartment-->
+<!--	    ORDER BY newClientCount DESC-->
+    </select>
+
+    <update id="refreshClientState">
+        <![CDATA[
+        update tab_conclusion_table set clientstate = '不活跃' where datetime < DATE_SUB(CURDATE(), INTERVAL 3 MONTH)
+            ]]>
+    </update>
+
+</mapper>
