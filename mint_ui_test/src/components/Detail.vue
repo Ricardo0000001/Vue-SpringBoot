@@ -57,27 +57,27 @@
           <!--<td>{{content[myIndex].takeVisit}}</td>-->
           <td>{{data.takeVisit}}</td>
         </tr>
-        <tr>
+        <tr v-if="styleQudao2">
           <td>需求面积</td>
           <!--<td>{{content[myIndex].needSquare}}</td>-->
           <td>{{data.needSquare | thousandsFilter(data.needSquare)}}</td>
         </tr>
-        <tr>
+        <tr v-if="styleQudao2">
           <td>价格</td>
           <td>{{data.price}}</td>
           <!--<td>{{content[myIndex].faceProble}}</td>-->
         </tr>
-        <tr>
+        <tr v-if="styleQudao2">
           <td>意向园区</td>
           <!--<td>{{content[myIndex].wantPark}}</td>-->
           <td>{{data.wantPark}}</td>
         </tr>
-        <tr>
+        <tr v-if="styleQudao2">
           <td>意向楼座</td>
           <td>{{data.wantBuilding}}</td>
           <!--<td>{{content[myIndex].wantBuilding}}</td>-->
         </tr>
-        <tr>
+        <tr v-if="styleQudao2">
           <td>预计成交</td>
           <td>{{data.predictdealtime.substr(0, 10)}}</td>
           <!--<td>{{content[myIndex].predictdealtime.substr(0, 10)}}</td>-->
@@ -149,6 +149,8 @@ export default {
   },
   data: function () {
     return {
+      // 测试用
+      styleQudao2: true,
       // 后台获取的数据
       data: [],
       myIndex: '',
@@ -206,6 +208,9 @@ export default {
         if (resp.status === 200) {
           console.log('print the return data:', resp.data.data)
           this.data = resp.data.data
+          if (this.data.clientStyle === '渠道') {
+            this.styleQudao2 = false
+          }
           if (this.data.dateTime === undefined || this.data.dateTime == null) {
             this.data.dateTime = '未知'
           }

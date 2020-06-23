@@ -4,14 +4,15 @@
     <x-header class="header" :left-options="{showBack: false}">有效客户明细表</x-header>
     <br>
     <!--部门选择-->
-    <group label-width="5em">
+    <!--<group label-width="5em">-->
+    <group>
       <popup-picker :title="departmentshow" :data="departmentList" v-model="department" @on-change="onChangeDepart" v-if="judgePermit"></popup-picker>
     </group>
     <!--客户等级-->
-    <group label-width="5em">
+    <!--<group label-width="5em">-->
+    <group>
       <popup-picker :title="currentlevelshow" :data="currentlevelList" v-model="currentLevel" @on-change="onChangeCurrentLevel"></popup-picker>
     </group>
-    <divider>^</divider>
     <group >
       <datetime
         v-model="startTime"
@@ -54,7 +55,7 @@
           <!--<td> x 2</td>-->
         </tr>
         <tr>
-          <td style="font-size: 15px">电话陌拜次数:</td>
+          <td style="font-size: 15px">电话沟通:</td>
           <td style="font-size: 15px">{{data.phonevisitcount}}</td>
           <td style="font-size: 15px">带看次数:</td>
           <td style="font-size: 15px; color: #CE3C39; ">{{data.takeVisitCount}}</td>
@@ -165,7 +166,8 @@ export default {
       var date = new Date(timestamp)// 时间戳为10位需*1000，时间戳为13位的话不需乘1000
       var Y = date.getFullYear() + '-'
       var M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-'
-      var D = date.getDate() + ' '
+      var D = date.getDate() + 1 < 10 ? '0' + date.getDate() : date.getDate()
+      // var D = date.getDate() + ' '
       // var h = date.getHours() + ':'
       // var m = date.getMinutes() + ':'
       // var s = date.getSeconds()

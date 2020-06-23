@@ -169,7 +169,14 @@
 <!--    on a.createtime = b.createtime and a.clientname=b.clientname-->
 <!--    ORDER BY createtime DESC-->
     <select id="selectOutlineSearch" parameterType="java.util.Map" resultType="java.util.Map">
-    select * from tab_conclusion_table where clientname like "%"#{keywords}"%" ORDER BY datetime desc
+    select  *,
+            IFNULL(clientinfo, '空') as clientinfo1,
+            IFNULL(predictdealtime, '') as predictdealtime1,
+            IFNULL(wantPark, '待定') as wantPark1,
+            IFNULL(wantBuilding, '待定') as wantBuilding1,
+            IFNULL(currentproblem, '空') as currentproblem1,
+            IFNULL(requiredsupport, '空') as requiredsupport1
+        from tab_conclusion_table where clientname like "%"#{keywords}"%" ORDER BY datetime desc
     </select>
 
 <!--    <select id="selectValidClientInfo" parameterType="java.util.Map" resultMap="customerManageEntity">-->

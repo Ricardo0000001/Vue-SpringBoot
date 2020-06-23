@@ -10,6 +10,22 @@
       </grid-item>
     </grid>
     <divider>最新数据</divider>
+    <!--<search-->
+      <!--placeholder="请输入客户名称"-->
+      <!--@result-click="resultClick"-->
+      <!--@on-change="getResult"-->
+      <!--:results="resultsList"-->
+      <!--v-model="value"-->
+      <!--top="46px"-->
+      <!--auto-fixed="false"-->
+      <!--auto-scroll-to-top="false"-->
+      <!--cancel-text="取消"-->
+      <!--position="absolute"-->
+      <!--ref="search">-->
+    <!--</search>-->
+    <group>
+      <cell title="keyword">{{ value }}</cell>
+    </group>
     <div style="padding:0 1px;">
       <x-table :full-bordered="true">
         <thead>
@@ -31,11 +47,13 @@
 </template>
 
 <script>import { MessageBox } from 'mint-ui'
-import { XTable, Divider, XHeader, XButton, Flexbox, FlexboxItem, Grid, GridItem } from 'vux'
+import { XTable, Divider, XHeader, XButton, Flexbox, FlexboxItem, Grid, GridItem, Search } from 'vux'
 export default {
   name: 'Home',
   data: function () {
     return {
+      // 测试用
+      resultsList: [{title: 'A'}, {title: 'B'}, {title: 'C'}, {title: 'D'}],
       staffInforUrl: 'https://dropdbandescape.parkwing.cn/codiv/role_employee/details',
       merchantStaff: '',
       department: [],
@@ -61,7 +79,8 @@ export default {
     Flexbox,
     FlexboxItem,
     Grid,
-    GridItem
+    GridItem,
+    Search
   },
   mounted: function () {
     // console.log('print the token content:', this.$route.query.token)

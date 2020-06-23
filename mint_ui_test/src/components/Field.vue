@@ -5,6 +5,11 @@
   <x-header class="header" :left-options="{showBack: false}">客户管理</x-header>
   <br>
   <div>
+    <!--<mt-search-->
+      <!--v-model="value"-->
+      <!--cancel-text="取消"-->
+      <!--placeholder="搜索">-->
+    <!--</mt-search>-->
     <!--<search-->
       <!--placeholder="请输入客户名称"-->
       <!--@result-click="resultClick"-->
@@ -12,7 +17,15 @@
       <!--:results="resultsList"-->
       <!--v-model="value"-->
       <!--top="46px"-->
-      <!--ref="search"></search>-->
+      <!--auto-fixed="false"-->
+      <!--auto-scroll-to-top="true"-->
+      <!--cancel-text="取消"-->
+      <!--position="absolute"-->
+      <!--ref="search">-->
+    <!--</search>-->
+    <!--<group>-->
+      <!--<cell></cell>-->
+    <!--</group>-->
     <group label-width="4.5em" label-margin-right="2em" label-align="right">
     <!--<group label-width="4.5em" label-margin-right="2em" label-align="right">-->
       <cell title="客户名称" style="display:inline-block"></cell>
@@ -58,13 +71,28 @@
     </group>
     <!--尝试下新的表单-->
   </div>
-  <div class="container" style="display:inline-block">
+  <!--<div class="container" style="display:inline-block">-->
     <!--提交时判断必选项，除了预计成交时间 困难 需求支持，其余都为必须 还需要判断面积和价格的两位小数-->
-    <mt-button class="confirmButton"  style="color: #FFFFFF" type="primary" @click.native="add">确认修改</mt-button>
-  </div>
-  <div class="content" style="display:inline-block">
-    <mt-button class="clearButton"  type="danger" @click.native="clear">清空</mt-button>
-  </div>
+      <box gap="20px 40px">
+      <flexbox>
+        <flexbox-item><div class="flex-demo"><x-button  @click.native="add">确认修改</x-button></div></flexbox-item>
+        <flexbox-item gap="40px 40px"><div class="flex-demo"><x-button type="warn" @click.native="clear">清空</x-button></div></flexbox-item>
+      </flexbox>
+      </box>
+      <!--<flexbox>-->
+        <!--<flexbox-item>-->
+          <!--<x-button type="primary" @click.native="add">确认修改</x-button>-->
+        <!--</flexbox-item>-->
+        <!--<flexbox-item>-->
+          <!--<x-button type="warn" @click.native="clear">清空</x-button>-->
+        <!--</flexbox-item>-->
+      <!--</flexbox>-->
+    <!--<mt-button class="confirmButton"  style="color: #FFFFFF" type="primary" @click.native="add">确认修改</mt-button>-->
+  <!--</div>-->
+  <!--<div class="content" style="display:inline-block">-->
+
+    <!--<mt-button class="clearButton"  type="danger" @click.native="clear">清空</mt-button>-->
+  <!--</div>-->
       <!--<div style="padding: 15px;">-->
         <!--<x-button @click.native="showLoading" type="primary">{{ $t('Show loading') }}</x-button>-->
       <!--</div>-->
@@ -72,7 +100,7 @@
 </template>
 
 <script>import { MessageBox } from 'mint-ui'
-import { Search, PopupPicker, XTextarea, Group, PopupRadio, Selector, Datetime, DatetimePlugin, XHeader, XInput, Cell, Loading, XButton, LoadingPlugin } from 'vux'
+import { Search, PopupPicker, XTextarea, Box, Group, PopupRadio, Selector, Datetime, DatetimePlugin, XHeader, XInput, Cell, Loading, XButton, LoadingPlugin, Flexbox, FlexboxItem } from 'vux'
 export default {
   components: {
     PopupRadio,
@@ -88,7 +116,10 @@ export default {
     Search,
     Loading,
     XButton,
-    LoadingPlugin
+    LoadingPlugin,
+    Flexbox,
+    FlexboxItem,
+    Box
   },
   /** 1.先取得openid用于显示员工信息
       2.客户状态默认为有效
@@ -111,7 +142,7 @@ export default {
       // 测试用
       styleQudao: false,
       styleQudao2: true,
-      resultsList: ['A', 'B', 'C', 'D'],
+      resultsList: [{title: 'A'}, {title: 'B'}, {title: 'C'}, {title: 'D'}],
       results: [{'熊大': 1}],
       value: '',
       test: '运维',
@@ -185,6 +216,9 @@ export default {
     /**
      * 测试用
      */
+    // resultClick (item) {
+    //   window.alert('you click the result item: ' + JSON.stringify(item))
+    // },
     showLoading () {
       this.$vux.loading.show({
         text: 'Loading'
@@ -263,7 +297,7 @@ export default {
       }
       // 先清空
       this.clear()
-      // console.log('item是什么')
+      console.log('item是什么999999999999999999', item)
       // console.log(item)
       // this.sourceChannel = item.sourceChannel
       this.sourceChannelP.push(item.sourceChannel)
@@ -284,23 +318,27 @@ export default {
       this.needSquare = item.needSquare
       this.price = item.price
       // this.wantPark = item.wantPark
-      console.log('print the item.wantPark', item.wantPark)
-      this.wantParkP.push(item.wantPark)
+      console.log('print the item.wantPark', item.wantPark1)
+      this.wantParkP.push(item.wantPark1)
       this.pickPark()
       // this.wantBuilding = item.wantBuilding
-      this.wantBuildingP[0] = (item.wantBuilding)
+      this.wantBuildingP[0] = (item.wantBuilding1)
       // this.wantBuildingP.push(item.wantBuilding)
       // console.log('打印一下这个赋值后的楼座')
       // console.log(this.wantBuilding)
-      this.predictDealTime = this.timestampToTime(item.predictdealtime)
-      this.currentproblem = item.currentproblem
-      this.requiredsupport = item.requiredsupport
+      if (item.predictdealtime1 === '') {
+        this.predictDealTime = null
+      } else {
+        this.predictDealTime = this.timestampToTime(item.predictdealtime1)
+      }
+      this.currentproblem = item.currentproblem1
+      this.requiredsupport = item.requiredsupport1
       // this.currentLevel = item.currentLevel
       this.currentLevelP.push(item.currentLevel)
       this.merchantStaff = item.merchantStaff
       this.merchantDepartment = item.merchantDepartment
       this.clientstate = item.clientstate
-      this.clientinfo = item.clientinfo // 模糊查询时新增字段
+      this.clientinfo = item.clientinfo1 // 模糊查询时新增字段
     },
     /**
      *el-autocomplete实现模糊查询
@@ -399,10 +437,10 @@ export default {
             for (let i = 0; i < tempResult.length; i++) {
               tempResult[i].value = tempResult[i].clientname
             }
-            console.log('pritn has the value:', tempResult)
+            console.log('pritn has the value========:', tempResult)
             cb(tempResult)
           } else {
-            var tempNull = [{value: '查无此人'}]
+            var tempNull = [{value: '暂无内容'}]
             cb(tempNull)
           }
           // console.log('print the new tempResult:', tempResult)
@@ -781,7 +819,7 @@ export default {
       //   return
       // }
       /** 打印一下发送的数据 */
-      console.log('向后台发送的数据', data)
+      console.log('向后台发送的数据99999999999999999999999999999999999', data)
       /** 向后台发送数据 */
       // http://localhost:8443
       // this.$axios.post('http://localhost:6501/customerManage',
