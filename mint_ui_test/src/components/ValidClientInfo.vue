@@ -137,6 +137,7 @@ export default {
       } else if (back.data[0].permit === 'all') { // 黄忠伟 陈凯奇权限
         this.judgePermit = true
         this.department[0] = null // 表示可以返回全部部门的数据
+        this.merchantStaff = null
       } else {
         this.judgePermit = false // 不显示部门选择的控件 并且写死了部门选项的值
       }
@@ -152,7 +153,11 @@ export default {
      */
     async getNameAndDepart () {
       var _this = this
-      this.openid = this.$route.params.openid
+      if (window.localStorage.getItem('globalOpenid')) {
+        this.openid = window.localStorage.getItem('globalOpenid')
+      } else {
+        this.openid = this.$route.params.openid
+      }
       var param = {'openid': this.openid}
       var test = await this.$axios.post(this.staffInforUrl, param)
       console.log('print the test content', test.data.list[0])

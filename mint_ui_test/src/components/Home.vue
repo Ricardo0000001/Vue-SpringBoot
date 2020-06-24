@@ -34,13 +34,27 @@
         </tr>
         </thead>
         <tbody>
-        <tr v-for="(item , i) in respData" :key="i" @click="seeDetail(item.id)">
-          <td style="font-size: 0.9rem">{{item.clientName}}</td>
-          <td style="font-size: 0.9rem">{{item.contactNumber}}</td>
-          <td style="font-size: 0.9rem">{{item.wantPark}}</td>
+        <tr v-for="(item , i) in homeStatis" :key="i" @click="seeDetail(item.id)">
+          <td style="font-size: 0.9rem">{{item.clientindustry}}</td>
+          <td style="font-size: 0.9rem">{{item.clientcount}}</td>
+          <td style="font-size: 0.9rem">{{item.squareSum}}</td>
         </tr>
         </tbody>
       </x-table>
+      <!--<x-table :full-bordered="true">-->
+      <!--<thead>-->
+      <!--<tr>-->
+        <!--<th style="font-weight: bold; font-size: 1rem" v-for="(header, index) in tableHeader" :key="index"> {{tableHeader[index]}}</th>-->
+      <!--</tr>-->
+      <!--</thead>-->
+      <!--<tbody>-->
+      <!--<tr v-for="(item , i) in respData" :key="i" @click="seeDetail(item.id)">-->
+        <!--<td style="font-size: 0.9rem">{{item.clientName}}</td>-->
+        <!--<td style="font-size: 0.9rem">{{item.contactNumber}}</td>-->
+        <!--<td style="font-size: 0.9rem">{{item.wantPark}}</td>-->
+      <!--</tr>-->
+      <!--</tbody>-->
+    <!--</x-table>-->
       <divider>我是有底线的</divider>
     </div>
   </div>
@@ -53,6 +67,7 @@ export default {
   data: function () {
     return {
       // 测试用
+      homeStatis: [],
       resultsList: [{title: 'A'}, {title: 'B'}, {title: 'C'}, {title: 'D'}],
       staffInforUrl: 'https://dropdbandescape.parkwing.cn/codiv/role_employee/details',
       merchantStaff: '',
@@ -65,7 +80,7 @@ export default {
       respData: [],
       tableHeader:
         [
-          '客户名称', '联系方式', '意向园区'
+          '行业', '活跃客户数', '需求面积'
           // '预计成交时间'
         ]
 
@@ -81,6 +96,14 @@ export default {
     Grid,
     GridItem,
     Search
+  },
+  activated () {
+    console.log('哎呀看见我了')
+    console.log('----------activated--------')
+  },
+  deactivated () {
+    console.log('讨厌！！你又走了')
+    console.log('----------deactivated--------')
   },
   mounted: function () {
     // console.log('print the token content:', this.$route.query.token)
@@ -150,6 +173,7 @@ export default {
     async getNameAndDepart () {
       var _this = this
       // this.openid = this.$route.params.openid
+      // MessageBox.alert('print the first token:', this.$route.query.token)
       if (this.$route.query.token === undefined) {
         console.log('unlawful sign in!')
         MessageBox.alert('非法访问！请先登录！').then(action => {
@@ -157,6 +181,8 @@ export default {
         })
       }
       this.openid = this.$route.query.token
+      // openid merchantStaff merchantDepartment 存入缓存
+      window.localStorage.setItem('globalOpenid', this.$route.query.token)
       console.log('print the openid:', this.$route.query.token)
       var param = {'openid': this.openid}
       // var test = await this.$axios.post(this.staffInforUrl, param)
@@ -164,6 +190,8 @@ export default {
       console.log('print the test content', test.data.list[0])
       _this.merchantStaff = test.data.list[0].name // 将部门名和员工名都放好
       _this.department[0] = test.data.list[0].deptname
+      window.localStorage.setItem('globalStaff', test.data.list[0].name)
+      window.localStorage.setItem('globalDepart', test.data.list[0].deptname)
     },
     /**
      * 根据姓名获取权限
@@ -199,19 +227,37 @@ export default {
       // if (this.clientState === '') { // 处理第一次选择时 客户状态为空时的判断
       //   this.clientState = '有效'
       // }
-      var params = {
+      // var params = {
+      //   'merchantDepartment': this.department[0],
+      //   'merchantStaff': this.merchantStaff,
+      //   'clientstate': this.clientState,
+      //   'start': this.startTime,
+      //   'end': this.endTime
+      // }
+      // console.log('打印发送的数据', params)
+      // this.$axios.post('/customerManage/outline', params).then((resp) => {
+      //   // this.$axios.post('http://dropdbandescape.parkwing.cn/codiv/customerManage/outline', params).then((resp) => {
+      //   if (resp.status === 200) {
+      //     console.log('打印返回的终究数据11111111111111111111', resp.data)
+      //     _this.respData = resp.data
+      //   }
+      // })
+      /**
+       * 获取 行业 活跃客户 需求面积
+       * 筛选条件 行业 时间30天以内 客户状态 面积 业务员名字 部门
+       */
+      var paramHome = {
         'merchantDepartment': this.department[0],
         'merchantStaff': this.merchantStaff,
         'clientstate': this.clientState,
         'start': this.startTime,
         'end': this.endTime
       }
-      console.log('打印发送的数据', params)
-      this.$axios.post('/customerManage/outline', params).then((resp) => {
-        // this.$axios.post('http://dropdbandescape.parkwing.cn/codiv/customerManage/outline', params).then((resp) => {
+      console.log('print the paramHome:', paramHome)
+      this.$axios.post('/customerManage/homeStatis', paramHome).then((resp) => {
         if (resp.status === 200) {
-          console.log('打印返回的终究数据11111111111111111111', resp.data)
-          _this.respData = resp.data
+          console.log('print the home return data:', resp.data)
+          _this.homeStatis = resp.data
         }
       })
     }

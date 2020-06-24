@@ -60,4 +60,15 @@ public class CustomerManageController extends BaseController<CustomerManageBiz, 
         System.out.println(data);
         return baseBiz.selectStatisDepart(data);
     }
+
+    /**
+     * home页面上的行业 活跃客户数 需求面积 的统计
+     * 筛选条件 行业 时间30天以内 客户状态 面积 业务员名字 部门
+     * /customerManage/homeStatis
+     */
+    @RequestMapping(value = "/homeStatis", method = RequestMethod.POST)
+    @ResponseBody
+    public List<Map<String, Object>> homeStatis(@RequestBody Map<String, Object> data){
+        return baseBiz.homeStatisBiz(data);
+    }
 }

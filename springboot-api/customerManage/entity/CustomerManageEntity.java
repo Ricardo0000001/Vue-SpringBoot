@@ -82,4 +82,8 @@ public class CustomerManageEntity {
     //新增字段 客户情况
     @Column(name = "clientinfo")
     String clientinfo;
+
+    //新增字段 客户类型
+    @Column(name = "clientindustry")
+    String clientindustry;
 }

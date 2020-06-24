@@ -28,6 +28,11 @@
           <!--<td>{{content[myIndex].clientStyle}}</td>-->
         </tr>
         <tr>
+          <td>客户行业</td>
+          <td>{{data.clientindustry}}</td>
+          <!--<td>{{content[myIndex].clientStyle}}</td>-->
+        </tr>
+        <tr>
           <td>联系方式</td>
           <!--<td>{{content[myIndex].contactNumber}}</td>-->
           <td>{{data.contactNumber}}</td>

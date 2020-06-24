@@ -42,6 +42,7 @@
       <!--<x-input title="客户状态" placeholder="请输入客户状态" v-model="clientState"></x-input>-->
       <popup-picker :title="clientState1" :data="clientState9" v-model="clientStateTest" @on-change="onChangeClientState" :placeholder="$t('请选择客户状态')" value-text-align="left"></popup-picker>
       <popup-picker :title="clientStyle1" :data="clientStyle9" v-model="clientStyleTest" @on-change="onChangeClientStyle" :placeholder="$t('请选择类型')" value-text-align="left"></popup-picker>
+      <popup-picker :title="clientIndustry1" :data="clientIndustry9" v-model="clientIndustryTest" @on-change="onChangeClientIndustry" :placeholder="$t('请选择行业')" value-text-align="left"></popup-picker>
       <!--<popup-radio class="radioStyle" title="客户类型" :options="clientStyle8" v-model="clientStyle" placeholder="请选择类型" value-text-align="left"></popup-radio>-->
       <x-input title="联系方式" type="number" placeholder="请输入联系方式" v-model="contactNumber" value-text-align="left"></x-input>
       <!--<x-input title="手机号码" name="mobile" placeholder="请输入手机号码" keyboard="number" is-type="china-mobile"></x-input>-->
@@ -133,6 +134,7 @@ export default {
     this.loadStaffInfo()
     // 初始化时间为当前日期
     this.initDatetime()
+    console.log('print the localstorage :', window.localStorage.getItem('globalOpenid'))
   },
   // computed: {
   //   styleQudao: true
@@ -148,6 +150,7 @@ export default {
       test: '运维',
       clientStyle1: '客户类型',
       clientState1: '客户状态',
+      clientIndustry1: '客户行业',
       // 固定的下拉框
       currentLevel4: ['A', 'B', 'C'],
       currentLevelP4: [['A', 'B', 'C']],
@@ -163,6 +166,7 @@ export default {
       clientStyle7: ['客户', '渠道'],
       clientStyle8: ['客户', '渠道'],
       clientStyle9: [['客户', '渠道']],
+      clientIndustry9: [['物流行业', '汽车行业', '信息技术行业', '加盟行业', '医美行业', '其他行业']],
       clientState9: [['有效', '不活跃']],
       // 接口请求数据预留
       wantPark2: [],
@@ -176,9 +180,11 @@ export default {
       datetime: null,
       clientName: null,
       clientState: null,
+      clientIndustry: null,
       clientStateTest: ['有效'],
       clientStyle: null,
       clientStyleTest: [],
+      clientIndustryTest: [],
       clientStyle2: null,
       contactNumber: null,
       contactStaff: null,
@@ -271,6 +277,9 @@ export default {
         this.styleQudao2 = true
       }
     },
+    onChangeClientIndustry (val) {
+      this.clientIndustry = val
+    },
     datetimeConfirm (val) {
       console.log('打印下condirm时间：', val)
       this.datetime = val
@@ -309,6 +318,7 @@ export default {
       this.personTitleP.push(item.personTitle)
       // this.clientStyle = item.clientStyle
       this.clientStyleTest.push(item.clientStyle)
+      this.clientIndustryTest.push(item.clientindustry)
       this.datetime = this.timestampToTime(item.datetime)
       // console.log('打印一下这个赋值后的日期')
       // console.log(this.datetime)
@@ -347,161 +357,169 @@ export default {
       console.log('打印下发送的queryString是什么', queryString)
       // this.$axios.post('http://localhost:8443/api/search?keywords=' + queryString).then((resp) => {
       var paramQuery = {
-        'keywords': queryString
-
+        'keywords': queryString,
+        'merchantStaff': this.merchantStaff
       }
-      console.log('打印下发送的paramQuery是什么', paramQuery)
+      // console.log('打印下发送的paramQuery是什么', paramQuery)
       // this.$axios.post('http://localhost:6501/customerManage/search', queryString).then((resp) => {
       // this.$axios.post('http://localhost:6501/customerManage/search', paramQuery).then((resp) => {
       // this.$axios.post('http://dropdbandescape.parkwing.cn/codiv/customerManage/search', paramQuery).then((resp) => {
       this.$axios.post('/customerManage/search', paramQuery).then((resp) => {
         console.log('打印下发送的paramQuery是什么', paramQuery)
         if (resp.status === 200) {
-          // var temp = [] // 用于临时存储数据
-          var tempResult = [] // 用于存储最终的呈现列表
-          console.log('打印一下模糊查询的返回值', resp.data)
-          // 遍历数组 1.先判断是否有属于自己的客户 有就留下来 2.再次遍历 如果客户已经存在了就不放进去否则就放进去
-          // 这里还要添加一次重复判断 万一都是自己的客户但是是重复的
+          console.log('print the return data:', resp.data)
+          var tempResult = resp.data
           for (let i = 0; i < resp.data.length; i++) {
-            if (tempResult.length !== 0 && resp.data[i].merchantStaff === this.merchantStaff) { // 长度不为零且是自己客户要看下这个客户是否已经存在了
-              for (let j = 0; j < tempResult.length; j++) {
-                if (tempResult[j].clientname === resp.data[i].clientname) { // 客户名已经存在就跳过
-                  console.log('跳过的重复的客户名：', resp.data[i].clientname)
-                  break
-                }
-              }
-            } else if (tempResult.length === 0 && resp.data[i].merchantStaff === this.merchantStaff) {
-              tempResult.push(resp.data[i])
-              console.log('成功进入的客户名：', resp.data[i].clientname)
-            }
-            // if (resp.data[i].merchantStaff === this.merchantStaff) {
-            //   tempResult.push(resp.data[i])
-            //   // tempResult[i].value = resp.data[i].clientname
-            // }
+            tempResult[i].value = resp.data[i].clientname
           }
-          console.log('print 是自己的客户:', tempResult)
-          /**
-           * 1.先判断tempResult是否存在长度
-           *    如果存在长度    遍历resp.data 由于是倒序排列 所以只需要留下第一条 第二条同样的用户名就删掉
-           *    如果不存在长度   就先插入第一条数据
-           */
-          if (tempResult.length !== 0) {
-            // tempResult.push(resp.data[0])
-            console.log('print the no-null tempResult')
-            for (let i = 0; i < resp.data.length; i++) {
-              for (let j = 0; j < tempResult.length; j++) {
-                if (resp.data[i].clientname === tempResult[j].clientname) {
-                  console.log('print the same clientname:', resp.data[i].clientname)
-                  break
-                } else {
-                  console.log('print the diff clientname:', resp.data[i].clientname)
-                  if (j === tempResult.length - 1) {
-                    tempResult.push(resp.data[i])
-                  }
-                }
-              }
-            }
-          } else {
-            console.log('print the null tempResult')
-            tempResult.push(resp.data[0])
-            for (let i = 0; i < resp.data.length; i++) {
-              for (let j = 0; j < tempResult.length; j++) {
-                if (resp.data[i].clientname === tempResult[j].clientname) {
-                  console.log('print the same clientname:', resp.data[i].clientname)
-                  break
-                } else {
-                  console.log('print the diff clientname:', resp.data[i].clientname)
-                  if (j === tempResult.length - 1) {
-                    tempResult.push(resp.data[i])
-                  }
-                }
-              }
-            }
-          }
-          // for (let i = 0; i < resp.data.length; i++) {
-          //   for (let j = 0; j < tempResult.length; j++) {
-          //     if (resp.data[i].clientname === tempResult[j].clientname) {
-          //       console.log('print the same clientname:', resp.data[i].clientname)
-          //       break
-          //     } else {
-          //       console.log('print the diff clientname:', resp.data[i].clientname)
-          //       if (j === tempResult.length - 1) {
-          //         tempResult.push(resp.data[i])
-          //       }
-          //     }
-          //   }
-          // }
-          if (tempResult[0] !== undefined) {
-            console.log('print the new tempResult length:', tempResult.length)
-            console.log('print the new tempResult:', tempResult)
-            for (let i = 0; i < tempResult.length; i++) {
-              tempResult[i].value = tempResult[i].clientname
-            }
-            console.log('pritn has the value========:', tempResult)
-            cb(tempResult)
-          } else {
-            var tempNull = [{value: '暂无内容'}]
-            cb(tempNull)
-          }
-          // console.log('print the new tempResult:', tempResult)
-          // for (let i = 0; i < tempResult.length; i++) {
-          //   tempResult[i].value = tempResult[i].clientname
-          // }
-          // cb(tempResult)
-          // var j = 0
-          // for (let i of temp) {
-          //   i.value = temp[j].clientname
-          //   j++
-          // }
-          // console.log('222222222:', resp.data)
-          // var j = 0
-          // for (let i of resp.data) {
-          //   i.value = resp.data[j].clientname
-          //   j++
-          // }
-          // // console.log('222222222:', resp.data)
-          // cb(resp.data)
-          /**
-           * 新建一个temp 存储已经存在的clientname
-           * 每次进来一个数据就判断是否在temp中
-           */
-          // var temp = []
-          // for (let i of resp.data) {
-          //   console.log('i:', i.clientName)
-          //   // for (let j = 0; j < temp.length; j++) {
-          //   //   if(temp[j] == re){
-          //   //
-          //   //   }
-          //   // }
-          // }
-          // let j = 0
-          // var temp = []
-          // for (let i of resp.data) {
-          //   // var temp = []
-          //   i.value = resp.data[j].clientName
-          //   /**
-          //    * 遍历temp 判断是否存在重复
-          //    * 如果存在重复就从resp.data中删除
-          //    * 这里有break和没有break差距很大 是为什么
-          //    */
-          //   for (let m = 0; m < temp.length; m++) {
-          //     console.log('temp[m] === i.value值为')
-          //     console.log(temp[m] === i.value)
-          //     if (temp[m] === i.value) {
-          //       resp.data.splice(j, j + 1)
-          //       console.log('resp.data是什么')
-          //       console.log(resp.data)
-          //       break
-          //     }
-          //   }
-          //   temp.push(i.value)
-          //   j++
-          //   if (j === resp.data.length) {
-          //     break
-          //   }
-          // }
-          // cb(resp.data)
+          cb(tempResult)
         }
+        // if (resp.status === 200) {
+        //   // var temp = [] // 用于临时存储数据
+        //   var tempResult = [] // 用于存储最终的呈现列表
+        //   console.log('打印一下模糊查询的返回值', resp.data)
+        //   // 遍历数组 1.先判断是否有属于自己的客户 有就留下来 2.再次遍历 如果客户已经存在了就不放进去否则就放进去
+        //   // 这里还要添加一次重复判断 万一都是自己的客户但是是重复的
+        //   for (let i = 0; i < resp.data.length; i++) {
+        //     if (tempResult.length !== 0 && resp.data[i].merchantStaff === this.merchantStaff) { // 长度不为零且是自己客户要看下这个客户是否已经存在了
+        //       for (let j = 0; j < tempResult.length; j++) {
+        //         if (tempResult[j].clientname === resp.data[i].clientname) { // 客户名已经存在就跳过
+        //           console.log('跳过的重复的客户名：', resp.data[i].clientname)
+        //           break
+        //         }
+        //       }
+        //     } else if (tempResult.length === 0 && resp.data[i].merchantStaff === this.merchantStaff) {
+        //       tempResult.push(resp.data[i])
+        //       console.log('成功进入的客户名：', resp.data[i].clientname)
+        //     }
+        //     // if (resp.data[i].merchantStaff === this.merchantStaff) {
+        //     //   tempResult.push(resp.data[i])
+        //     //   // tempResult[i].value = resp.data[i].clientname
+        //     // }
+        //   }
+        //   console.log('print 是自己的客户:', tempResult)
+        //   /**
+        //    * 1.先判断tempResult是否存在长度
+        //    *    如果存在长度    遍历resp.data 由于是倒序排列 所以只需要留下第一条 第二条同样的用户名就删掉
+        //    *    如果不存在长度   就先插入第一条数据
+        //    */
+        //   if (tempResult.length !== 0) {
+        //     // tempResult.push(resp.data[0])
+        //     console.log('print the no-null tempResult')
+        //     for (let i = 0; i < resp.data.length; i++) {
+        //       for (let j = 0; j < tempResult.length; j++) {
+        //         if (resp.data[i].clientname === tempResult[j].clientname) {
+        //           console.log('print the same clientname:', resp.data[i].clientname)
+        //           break
+        //         } else {
+        //           console.log('print the diff clientname:', resp.data[i].clientname)
+        //           if (j === tempResult.length - 1) {
+        //             tempResult.push(resp.data[i])
+        //           }
+        //         }
+        //       }
+        //     }
+        //   } else {
+        //     console.log('print the null tempResult')
+        //     tempResult.push(resp.data[0])
+        //     for (let i = 0; i < resp.data.length; i++) {
+        //       for (let j = 0; j < tempResult.length; j++) {
+        //         if (resp.data[i].clientname === tempResult[j].clientname) {
+        //           console.log('print the same clientname:', resp.data[i].clientname)
+        //           break
+        //         } else {
+        //           console.log('print the diff clientname:', resp.data[i].clientname)
+        //           if (j === tempResult.length - 1) {
+        //             tempResult.push(resp.data[i])
+        //           }
+        //         }
+        //       }
+        //     }
+        //   }
+        //   // for (let i = 0; i < resp.data.length; i++) {
+        //   //   for (let j = 0; j < tempResult.length; j++) {
+        //   //     if (resp.data[i].clientname === tempResult[j].clientname) {
+        //   //       console.log('print the same clientname:', resp.data[i].clientname)
+        //   //       break
+        //   //     } else {
+        //   //       console.log('print the diff clientname:', resp.data[i].clientname)
+        //   //       if (j === tempResult.length - 1) {
+        //   //         tempResult.push(resp.data[i])
+        //   //       }
+        //   //     }
+        //   //   }
+        //   // }
+        //   if (tempResult[0] !== undefined) {
+        //     console.log('print the new tempResult length:', tempResult.length)
+        //     console.log('print the new tempResult:', tempResult)
+        //     for (let i = 0; i < tempResult.length; i++) {
+        //       tempResult[i].value = tempResult[i].clientname
+        //     }
+        //     console.log('pritn has the value========:', tempResult)
+        //     cb(tempResult)
+        //   } else {
+        //     var tempNull = [{value: '暂无内容'}]
+        //     cb(tempNull)
+        //   }
+        //   // console.log('print the new tempResult:', tempResult)
+        //   // for (let i = 0; i < tempResult.length; i++) {
+        //   //   tempResult[i].value = tempResult[i].clientname
+        //   // }
+        //   // cb(tempResult)
+        //   // var j = 0
+        //   // for (let i of temp) {
+        //   //   i.value = temp[j].clientname
+        //   //   j++
+        //   // }
+        //   // console.log('222222222:', resp.data)
+        //   // var j = 0
+        //   // for (let i of resp.data) {
+        //   //   i.value = resp.data[j].clientname
+        //   //   j++
+        //   // }
+        //   // // console.log('222222222:', resp.data)
+        //   // cb(resp.data)
+        //   /**
+        //    * 新建一个temp 存储已经存在的clientname
+        //    * 每次进来一个数据就判断是否在temp中
+        //    */
+        //   // var temp = []
+        //   // for (let i of resp.data) {
+        //   //   console.log('i:', i.clientName)
+        //   //   // for (let j = 0; j < temp.length; j++) {
+        //   //   //   if(temp[j] == re){
+        //   //   //
+        //   //   //   }
+        //   //   // }
+        //   // }
+        //   // let j = 0
+        //   // var temp = []
+        //   // for (let i of resp.data) {
+        //   //   // var temp = []
+        //   //   i.value = resp.data[j].clientName
+        //   //   /**
+        //   //    * 遍历temp 判断是否存在重复
+        //   //    * 如果存在重复就从resp.data中删除
+        //   //    * 这里有break和没有break差距很大 是为什么
+        //   //    */
+        //   //   for (let m = 0; m < temp.length; m++) {
+        //   //     console.log('temp[m] === i.value值为')
+        //   //     console.log(temp[m] === i.value)
+        //   //     if (temp[m] === i.value) {
+        //   //       resp.data.splice(j, j + 1)
+        //   //       console.log('resp.data是什么')
+        //   //       console.log(resp.data)
+        //   //       break
+        //   //     }
+        //   //   }
+        //   //   temp.push(i.value)
+        //   //   j++
+        //   //   if (j === resp.data.length) {
+        //   //     break
+        //   //   }
+        //   // }
+        //   // cb(resp.data)
+        // }
       })
     },
     /** 预加载全部的数据到本地
@@ -617,6 +635,7 @@ export default {
         clientName: this.clientName,
         // clientStyle: this.clientStyle,
         clientStyle: this.clientStyleTest[0],
+        clientindustry: this.clientIndustryTest[0],
         contactNumber: this.contactNumber,
         contactStaff: this.contactStaff,
         // personTitle: this.personTitle,
@@ -667,6 +686,12 @@ export default {
       // }
       if (this.clientStyleTest.length === 0) {
         MessageBox.alert('客户类型不得为空').then(action => {
+
+        })
+        return
+      }
+      if (this.clientIndustryTest.length === 0) {
+        MessageBox.alert('客户行业不得为空').then(action => {
 
         })
         return
@@ -842,6 +867,7 @@ export default {
       this.clientName = null
       // this.clientStyle = null
       this.clientStyleTest = []
+      this.clientIndustryTest = []
       this.clientstate = '有效'
       this.contactNumber = null
       this.contactStaff = null
@@ -886,17 +912,17 @@ export default {
   .autoStyle{
     margin: 0.5em 0.1em 0.5em -1em;
   }
-  .confirmButton{
-    margin: 0.5em 0.5em 0.5em 5em;
-  }
-  .clearButton{
-    margin: 0.5em 0.5em 0.5em 0.5em;
-  }
-  .container {
-    float:left;
-  }
-  .content{
-    float:left;
-  }
+  /*.confirmButton{*/
+    /*margin: 0.5em 0.5em 0.5em 5em;*/
+  /*}*/
+  /*.clearButton{*/
+    /*margin: 0.5em 0.5em 0.5em 0.5em;*/
+  /*}*/
+  /*.container {*/
+    /*float:left;*/
+  /*}*/
+  /*.content{*/
+    /*float:left;*/
+  /*}*/
 
 </style>

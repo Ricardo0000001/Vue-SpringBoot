@@ -54,6 +54,17 @@ public class CustomerManageBiz extends BaseBiz<CustomerManageMapper, CustomerMan
     public List<Map<String,Object>> selectStatisDepart(Map<String,Object> params){
         return mapper.selectStatisDepart(params);
     }
+
+    /**
+     * home页面的统计
+     * @param params
+     * @return
+     */
+    public List<Map<String,Object>> homeStatisBiz(Map<String,Object> params){
+        return mapper.homeStatisMapper(params);
+    }
+
+
     /**
      * 每天晚上刷新数据库中三个月以上没更新的客户为不活跃
      */

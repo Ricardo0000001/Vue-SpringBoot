@@ -17,5 +17,6 @@ public interface CustomerManageMapper extends Mapper<CustomerManageEntity> {
     public List<Map<String, Object>> selectValidClientCompute(Map<String, Object> params);
     public List<Map<String, Object>> selectClientCountRank(Map<String, Object> params);
     public List<Map<String, Object>> selectStatisDepart(Map<String, Object> params);
+    public List<Map<String, Object>> homeStatisMapper(Map<String, Object> params);
     public int refreshClientState();
 }

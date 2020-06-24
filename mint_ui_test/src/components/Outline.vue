@@ -3,7 +3,7 @@
     <br>
     <x-header class="header" :left-options="{showBack: false}">招商信息明细表</x-header>
     <br>
-    <group label-width="5em">
+    <group>
       <popup-picker :title="departmentshow" :data="departmentList" v-model="department" @on-change="onChangeDepart" v-if="judgePermit"></popup-picker>
       <!--<popup-picker :title="departmentshow" :data="departmentList" v-model="department" @on-change="onChangeDepart"></popup-picker>-->
     </group>
@@ -136,6 +136,7 @@ export default {
       } else if (back.data[0].permit === 'all') { // 黄忠伟 陈凯奇权限
         this.judgePermit = true // 显示部门选择的控件
         this.department[0] = null // 表示可以返回全部部门的数据
+        this.merchantStaff = null
       } else {
         this.judgePermit = false // 不显示部门选择的控件 并且写死了部门选项的值
         this.merchantStaff = null // 当前部门下的全部员工都可以出现
@@ -152,7 +153,11 @@ export default {
      */
     async getNameAndDepart () {
       var _this = this
-      this.openid = this.$route.params.openid
+      if (window.localStorage.getItem('globalOpenid')) {
+        this.openid = window.localStorage.getItem('globalOpenid')
+      } else {
+        this.openid = this.$route.params.openid
+      }
       var param = {'openid': this.openid}
       // var test = await this.$axios.post(this.staffInforUrl, param)
       var test = await this.$axios.post(this.staffInforUrl, param)
