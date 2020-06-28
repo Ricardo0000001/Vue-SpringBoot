@@ -1,5 +1,5 @@
 <template>
-    <div>
+  <div>
   <!--<mt-header fixed title="营销团队工作汇总"></mt-header>-->
   <br>
   <x-header class="header" :left-options="{showBack: false}">客户管理</x-header>
@@ -28,6 +28,21 @@
     <!--</group>-->
     <group label-width="4.5em" label-margin-right="2em" label-align="right">
     <!--<group label-width="4.5em" label-margin-right="2em" label-align="right">-->
+      <box gap="5px 10px">
+        <flexbox>
+          <flexbox-item>
+          </flexbox-item>
+          <flexbox-item>
+          </flexbox-item>
+          <flexbox-item>
+            <x-button @click.native="temporartySave">临时保存</x-button>
+          </flexbox-item>
+        </flexbox>
+      </box>
+      <!--<div v-transfer-dom>-->
+      <div>
+        <alert v-model="show2" :title="$t('临时保存成功！')" :content="$t('数据临时保存请尽快提交数据！')"></alert>
+      </div>
       <cell title="客户名称" style="display:inline-block"></cell>
       <el-autocomplete
         style="display:inline-block; width: auto;"
@@ -72,6 +87,15 @@
     </group>
     <!--尝试下新的表单-->
   </div>
+    <!--<div v-transfer-dom>-->
+    <div>
+      <confirm v-model="show"
+               :title="$t('是否加载上次临时保存的数据')"
+               @on-cancel="onCancel"
+               @on-confirm="onConfirm">
+        <!--<p style="text-align:center;">{{ $t('Are you sure?') }}</p>-->
+      </confirm>
+    </div>
   <!--<div class="container" style="display:inline-block">-->
     <!--提交时判断必选项，除了预计成交时间 困难 需求支持，其余都为必须 还需要判断面积和价格的两位小数-->
       <box gap="20px 40px">
@@ -101,7 +125,7 @@
 </template>
 
 <script>import { MessageBox } from 'mint-ui'
-import { Search, PopupPicker, XTextarea, Box, Group, PopupRadio, Selector, Datetime, DatetimePlugin, XHeader, XInput, Cell, Loading, XButton, LoadingPlugin, Flexbox, FlexboxItem } from 'vux'
+import { Search, PopupPicker, XTextarea, Box, Group, PopupRadio, Selector, Datetime, DatetimePlugin, XHeader, XInput, Cell, Loading, XButton, LoadingPlugin, Flexbox, FlexboxItem, Confirm, Alert } from 'vux'
 export default {
   components: {
     PopupRadio,
@@ -120,7 +144,9 @@ export default {
     LoadingPlugin,
     Flexbox,
     FlexboxItem,
-    Box
+    Box,
+    Confirm,
+    Alert
   },
   /** 1.先取得openid用于显示员工信息
       2.客户状态默认为有效
@@ -135,6 +161,8 @@ export default {
     // 初始化时间为当前日期
     this.initDatetime()
     console.log('print the localstorage :', window.localStorage.getItem('globalOpenid'))
+    // 判断临时数据 temporary的缓存是否为空 如果为空 就不提示 如果存在集弹窗询问是否加载上次录入的数据
+    this.loadTemporaryData()
   },
   // computed: {
   //   styleQudao: true
@@ -142,6 +170,8 @@ export default {
   data: function () {
     return {
       // 测试用
+      show: false,
+      show2: false,
       styleQudao: false,
       styleQudao2: true,
       resultsList: [{title: 'A'}, {title: 'B'}, {title: 'C'}, {title: 'D'}],
@@ -219,6 +249,118 @@ export default {
     }
   },
   methods: {
+    onCancel () {
+      console.log('on cancel')
+    },
+    /**
+     *如果确认加载上次书写的数据 那就一个一个放进去
+     */
+    onConfirm () {
+      console.log('on confirm')
+      var tempData = window.localStorage.getItem('temporary')
+      var tempDataJSON = JSON.parse(tempData)
+      console.log('print the tempDataJSON', tempDataJSON)
+      this.clientName = tempDataJSON.clientName
+      this.datetime = tempDataJSON.dateTime
+      this.clientState = tempDataJSON.clientstate
+      // 在加载列表数据时要先判断是否为空 为空就不赋值了 否则在选择时会有bug
+      if (tempDataJSON.clientStyle) {
+        this.clientStyleTest.push(tempDataJSON.clientStyle)
+      }
+      if (tempDataJSON.clientindustry) {
+        this.clientIndustryTest.push(tempDataJSON.clientindustry) // 存疑
+      }
+      this.contactNumber = tempDataJSON.contactNumber
+      this.contactStaff = tempDataJSON.contactStaff
+      if (tempDataJSON.personTitle) {
+        this.personTitleP.push(tempDataJSON.personTitle)
+      }
+      if (tempDataJSON.sourceChannel) {
+        this.sourceChannelP.push(tempDataJSON.sourceChannel)
+      }
+      if (tempDataJSON.phoneVisit) {
+        this.phoneVisitP.push(tempDataJSON.phoneVisit)
+      }
+      if (tempDataJSON.takeVisit) {
+        this.takeVisitP.push(tempDataJSON.takeVisit)
+      }
+      this.needSquare = tempDataJSON.needSquare
+      this.price = tempDataJSON.price
+      if (tempDataJSON.wantPark) {
+        this.wantParkP.push(tempDataJSON.wantPark)
+      }
+      if (tempDataJSON.wantBuilding) {
+        this.wantBuildingP.push(tempDataJSON.wantBuilding)
+      }
+      this.predictDealTime = tempDataJSON.predictdealtime
+      this.clientinfo = tempDataJSON.clientinfo // 模糊查询时新增字段
+      this.currentproblem = tempDataJSON.currentproblem
+      this.requiredsupport = tempDataJSON.requiredsupport
+      if (tempDataJSON.currentLevel) {
+        this.currentLevelP.push(tempDataJSON.currentLevel)
+      }
+      this.merchantStaff = tempDataJSON.merchantStaff
+      this.merchantDepartment = tempDataJSON.merchantDepartment
+    },
+    /**
+     * 页面加载时 判断是否存在缓存 如果存在就弹窗提示是否要加载上次录入的数据
+     */
+    loadTemporaryData () {
+      console.log('pritn the data:', window.localStorage.getItem('temporary'))
+      if (window.localStorage.getItem('temporary') !== null) {
+        this.show = true
+      }
+    },
+    /**
+     * 临时保存当前写好的数据到缓存中
+     */
+    temporartySave () {
+      this.show2 = true
+      // 临时保存的数据对象
+      let data = {
+        dateTime: this.datetime,
+        clientName: this.clientName,
+        // clientStyle: this.clientStyle,
+        clientStyle: this.clientStyleTest[0],
+        clientindustry: this.clientIndustryTest[0],
+        contactNumber: this.contactNumber,
+        contactStaff: this.contactStaff,
+        // personTitle: this.personTitle,
+        personTitle: this.personTitleP[0],
+        // sourceChannel: this.sourceChannel,
+        sourceChannel: this.sourceChannelP[0],
+        // phoneVisit: this.phoneVisit,
+        phoneVisit: this.phoneVisitP[0],
+        // takeVisit: this.takeVisit,
+        takeVisit: this.takeVisitP[0],
+        needSquare: this.needSquare,
+        price: this.price,
+        // wantBuilding: this.wantBuilding,
+        wantBuilding: this.wantBuildingP[0],
+        // wantPark: this.wantPark,
+        wantPark: this.wantParkP[0],
+        predictdealtime: this.predictDealTime,
+        currentproblem: this.currentproblem,
+        requiredsupport: this.requiredsupport,
+        // currentLevel: this.currentLevel,
+        currentLevel: this.currentLevelP[0],
+        // currentLevel: '123',
+        merchantStaff: this.merchantStaff,
+        merchantDepartment: this.merchantDepartment,
+        clientstate: this.clientStateTest[0],
+        clientinfo: this.clientinfo // 新增数据时候的 新增字段 后台也要对应有
+      }
+      // console.log('pirnt the data:', data)
+      window.localStorage.setItem('temporary', JSON.stringify(data))
+      // console.log('temporary data:', window.localStorage.getItem('temporary'))
+      // console.log('temporary data:', window.localStorage.getItem('dateTime'))
+      // var tempData = window.localStorage.getItem('temporary')
+      // var tempDataJSON = JSON.parse(tempData)
+      // console.log('111111111111', tempDataJSON)
+      // console.log('222222222', tempDataJSON.dateTime)
+      // console.log('print the tempData:', tempData)
+      // console.log('print the tempData dateTime:', tempData.get('dataTime'))
+    },
     /**
      * 测试用
      */
@@ -854,6 +996,9 @@ export default {
         if (resp.status === 200) {
           MessageBox.alert('添加成功！').then(action => {
           })
+          // 提交成功后清除缓存
+          window.localStorage.removeItem('temporary')
+          console.log('print the remove data', window.localStorage)
         }
       },
       function (err) {
