@@ -1,173 +1,151 @@
 <template>
   <div>
-    <!--<load-more tip="详细信息" :show-loading="false" background-color="#fbf9fe"></load-more>-->
     <div>
       <br>
-      <x-header class="header"  :left-options="{showBack: false}" left-options.preventGoBack="true" @on-click-back="goBack">工作汇报详情</x-header>
+      <x-header class="header"  :left-options="{showBack: false}" left-options.preventGoBack="true">工作汇报详情</x-header>
       <br>
-      <x-table :full-bordered="true"  :content-bordered="true">
+      <x-table :full-bordered="true"  :content-bordered="true" :cell-bordered="true">
         <tbody>
         <tr>
           <td>客户名称</td>
-          <!--<td>{{content[myIndex].clientName}}</td>-->
           <td>{{data.clientName}}</td>
         </tr>
         <tr>
           <td>日期</td>
-          <!--<td>{{// content[myIndex].dateTime.substr(0, 10)}}</td>-->
           <td>{{data.dateTime.substr(0, 10)}}</td>
         </tr>
         <tr>
           <td>客户状态</td>
           <td style="color: #f76260; font-weight: 600">{{data.clientstate}}</td>
-          <!--<td style="color: #f76260; font-weight: 600">{{content[myIndex].clientstate}}</td>-->
         </tr>
         <tr>
           <td>类型</td>
           <td>{{data.clientStyle}}</td>
-          <!--<td>{{content[myIndex].clientStyle}}</td>-->
         </tr>
         <tr>
           <td>客户行业</td>
           <td>{{data.clientindustry}}</td>
-          <!--<td>{{content[myIndex].clientStyle}}</td>-->
         </tr>
         <tr>
           <td>联系方式</td>
-          <!--<td>{{content[myIndex].contactNumber}}</td>-->
           <td>{{data.contactNumber}}</td>
         </tr>
         <tr>
           <td>联系人员</td>
-          <!--<td>{{content[myIndex].contactStaff}}</td>-->
           <td>{{data.contactStaff}}</td>
         </tr>
         <tr>
           <td>人员职称</td>
           <td>{{data.personTitle}}</td>
-          <!--<td>{{content[myIndex].personTitle}}</td>-->
         </tr>
         <tr>
           <td>来源渠道</td>
           <td>{{data.sourceChannel}}</td>
-          <!--<td>{{content[myIndex].sourceChannel}}</td>-->
         </tr>
         <tr>
           <td>电话沟通</td>
           <td>{{data.phoneVisit}}</td>
-          <!--<td>{{content[myIndex].phoneVisit}}</td>-->
         </tr>
         <tr>
           <td>带看</td>
-          <!--<td>{{content[myIndex].takeVisit}}</td>-->
           <td>{{data.takeVisit}}</td>
         </tr>
         <tr v-if="styleQudao2">
           <td>需求面积</td>
-          <!--<td>{{content[myIndex].needSquare}}</td>-->
           <td>{{data.needSquare | thousandsFilter(data.needSquare)}}</td>
         </tr>
         <tr v-if="styleQudao2">
           <td>价格</td>
           <td>{{data.price}}</td>
-          <!--<td>{{content[myIndex].faceProble}}</td>-->
         </tr>
         <tr v-if="styleQudao2">
           <td>意向园区</td>
-          <!--<td>{{content[myIndex].wantPark}}</td>-->
           <td>{{data.wantPark}}</td>
         </tr>
         <tr v-if="styleQudao2">
           <td>意向楼座</td>
           <td>{{data.wantBuilding}}</td>
-          <!--<td>{{content[myIndex].wantBuilding}}</td>-->
         </tr>
         <tr v-if="styleQudao2">
           <td>预计成交</td>
           <td>{{data.predictdealtime.substr(0, 10)}}</td>
-          <!--<td>{{content[myIndex].predictdealtime.substr(0, 10)}}</td>-->
         </tr>
         <tr>
           <td>客户情况</td>
           <td>{{data.clientinfo}}</td>
-          <!--<td>{{content[myIndex].faceProble}}</td>-->
         </tr>
         <tr>
           <td>所遇困难</td>
           <td>{{data.currentproblem}}</td>
-          <!--<td>{{content[myIndex].faceProble}}</td>-->
         </tr>
         <tr>
           <td>需求支持</td>
           <td>{{data.requiredsupport}}</td>
-          <!--<td>{{content[myIndex].wantSupport}}</td>-->
         </tr>
         <tr>
           <td>当前等级</td>
-          <!--<td>{{content[myIndex].currentLevel}}</td>-->
           <td>{{data.currentLevel}}</td>
         </tr>
         <tr>
           <td>招商人员</td>
           <td>{{data.merchantStaff}}</td>
-          <!--<td>{{content[myIndex].merchantStaff}}</td>-->
         </tr>
         <tr>
           <td>招商部门</td>
-          <!--<td>{{content[myIndex].merchantDepartment}}</td>-->
           <td>{{data.merchantDepartment}}</td>
         </tr>
         </tbody>
       </x-table>
+      <div>
+        <confirm v-model="show"
+                 :title="$t('确认删除？')"
+                 @on-confirm="onConfirm">
+          <p style="text-align:center;">{{ $t('删除后无法恢复！') }}</p>
+        </confirm>
+      </div>
       <box gap="20px 20px">
-      <!--<flexbox>-->
-        <!--<flexbox-item>-->
-          <!--&lt;!&ndash;<x-button type="default">default</x-button>&ndash;&gt;-->
-        <!--</flexbox-item>-->
-        <!--<flexbox-item>-->
-          <!--&lt;!&ndash;<x-button type="primary">primary</x-button>&ndash;&gt;-->
-        <!--</flexbox-item>-->
-        <!--<flexbox-item>-->
-          <x-button type="warn" @click.native="deleteItem">删除</x-button>
-        <!--</flexbox-item>-->
-      <!--</flexbox>-->
+      <flexbox>
+        <flexbox-item>
+        </flexbox-item>
+        <flexbox-item>
+        </flexbox-item>
+        <flexbox-item>
+          <x-button type="warn" @click.native="deleteItem" v-if="deletePermissionData">删除</x-button>
+        </flexbox-item>
+      </flexbox>
       </box>
-      <!--<mt-button  class="deleteButton" type="danger"  @click.native="deleteItem">删除</mt-button>-->
       <divider>我是有底线的</divider>
     </div>
   </div>
 </template>
 
 <script>import { MessageBox } from 'mint-ui'
-import { XTable, LoadMore, Divider, XHeader, XButton, Box, Flexbox, FlexboxItem } from 'vux'
+import { XTable, Divider, XHeader, XButton, Box, Flexbox, FlexboxItem, Confirm } from 'vux'
 
 export default {
   components: {
     XTable,
-    LoadMore,
     Divider,
     XHeader,
     XButton,
     Box,
     Flexbox,
-    FlexboxItem
+    FlexboxItem,
+    Confirm
   },
   data: function () {
     return {
-      // 测试用
+      // 控制删除按钮的显示 默认为不显示 只有员工自己删除数据时显示 领导也不能删除
+      deletePermissionData: false,
+      // 删除按钮确认弹窗的控制
+      show: false,
+      // 如果是渠道类型 有些字段不用显示
       styleQudao2: true,
       // 后台获取的数据
       data: [],
-      myIndex: '',
-      content: [],
       // 数据条目对应的id
-      openid: '',
-      id: '',
-      tableHeader:
-        [
-          '序号', '日期', '客户名称', '类型(客户/渠道)', '联系方式', '联系人员', '人员职称', '客户渠道'
-        ]
-
+      // openid: '',
+      id: ''
     }
   },
   /**
@@ -187,40 +165,44 @@ export default {
    *根据传入的id去数据库取数据
    */
   mounted: function () {
-    // 获取了id
+    // 获取了id 在删除的时候会用这个id
     this.id = this.$route.params.index
-    this.openid = this.$route.params.openid
-    this.selectDataId(this.$route.params.index)
+    // this.openid = this.$route.params.openid
+    this.selectDataId(this.$route.params.index) // 根据传入的参数中的id去取得一条数据返回
+    this.deletePermission() // 判断删除数据的权限
   },
   methods: {
-    /**
-     * 点击返回时触发
-     */
-    goBack () {
-      this.$router.go(-1)
-    },
     /**
      * 根据获取的id去取一条值
      * /customerManage/{id}
      * 参数 ： id
      */
     selectDataId (id) {
+      var _this = this
       if (id == null) {
-        console.log('id is null')
+        alert('id is null! please contact the coder!')
       }
-      console.log('打印下', id)
       this.$axios.get('/customerManage/' + id).then((resp) => {
         if (resp.status === 200) {
-          console.log('print the return data:', resp.data.data)
-          this.data = resp.data.data
-          if (this.data.clientStyle === '渠道') {
+          this.data = resp.data.data // 将返回数据赋值给data
+          if (this.data.clientStyle === '渠道') { // 判断客户类型是否是渠道 如果是渠道就隐去一些没有数据的字段
             this.styleQudao2 = false
           }
+          // 这里的两个判断处理是用来避免返回数据中字段为空时报错
           if (this.data.dateTime === undefined || this.data.dateTime == null) {
-            this.data.dateTime = '未知'
+            this.data.dateTime = ''
           }
           if (this.data.predictdealtime === undefined || this.data.predictdealtime == null) {
-            this.data.predictdealtime = '尚未确定'
+            this.data.predictdealtime = ''
+          }
+          // console.log('print the this.data.merchantStaff1111111111', this.data.merchantStaff)
+          // console.log('print the window.localStorage.getItem(\'globalStaff\')1111111111', window.localStorage.getItem('globalStaff'))
+          // console.log('prin the judage', this.data.merchantStaff !== window.localStorage.getItem('globalStaff'))
+          // 当前数据条目的员工和查看这条数据的员工姓名不一致的时候就隐去删除按钮
+          if (this.data.merchantStaff !== window.localStorage.getItem('globalStaff')) {
+            _this.deletePermissionData = false
+          } else {
+            _this.deletePermissionData = true
           }
         }
       })
@@ -230,6 +212,13 @@ export default {
      * 删除后返回上一页面
      */
     deleteItem: function () {
+      // 修改show值为true confirm弹窗显示
+      this.show = true
+    },
+    /**
+     * 弹窗点击确认后进行删除然后返回上一页面
+     */
+    onConfirm () {
       this.$axios.delete('/customerManage/' + this.id).then((resp) => {
         if (resp.status === 200) {
           MessageBox.alert('删除成功！').then(action => {
@@ -237,6 +226,15 @@ export default {
           })
         }
       })
+    },
+    /**
+     * 判断删除权限
+     * 如果登录用户名和当前数据记录的名字不一致就隐藏删除按钮
+     */
+    deletePermission () {
+      if (this.data.merchantStaff !== window.localStorage.getItem('globalStaff')) {
+        this.deletePermissionData = false
+      }
     }
   }
 }

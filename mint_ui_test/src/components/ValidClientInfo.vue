@@ -102,6 +102,8 @@ export default {
       endTime: null,
       // 概览显示的数据字段：部门 日期 招商人员 客户名称 电话 客户状态
       merchantDepartment: '',
+      department1: null,
+      department2: null,
       merchantStaff: '',
       datetime: '',
       // 带上次数的后台请求数据
@@ -125,45 +127,52 @@ export default {
      * 根据姓名获取权限
      */
     async getPermission () {
-      var username = this.merchantStaff
+      var username = window.localStorage.getItem('globalStaff')
       var paramUserName = {
         'username': username
       }
       var back = await this.$axios.post('/customerManagePermit/outlinePermit', paramUserName)
-      console.log('print the gerPermission data:', back)
-      // console.log('print the gerPermission data:', back.data[0].permit)
-      if (back.data.length === 0) {
+      if (back.data.length === 0) { // 不在权限表中 就是普通员工
         this.judgePermit = false
-      } else if (back.data[0].permit === 'all') { // 黄忠伟 陈凯奇权限
-        this.judgePermit = true
-        this.department[0] = null // 表示可以返回全部部门的数据
-        this.merchantStaff = null
+        this.department1 = window.localStorage.getItem('globalDepart1') // 部门写死
+        this.department2 = window.localStorage.getItem('globalDepart2')
+        this.merchantStaff = window.localStorage.getItem('globalStaff') // 员工写死
+        window.localStorage.setItem('globalPermit', 'staff')
+      } else if (back.data[0].permit === 'all') { // 最高权限 黄忠伟 陈凯奇权限
+        this.judgePermit = true // 允许选择部门 因为没有部门选择所以没用到这个
+        this.department1 = null // 表示可以返回全部部门的数据
+        this.department2 = null // 表示可以返回全部部门的数据
+        this.merchantStaff = null // 员工不受限制
+      } else if (this.merchantStaff === '王火荣' || this.merchantStaff === '杨朔') {
+        this.judgePermit = false // 不显示部门选择控件
+        this.department1 = window.localStorage.getItem('globalDepart1') // 这位领导有两个部门
+        this.department2 = window.localStorage.getItem('globalDepart2')
+        this.merchantStaff = null // 该部门下员工不限制
+      } else if (back.data[0].permit === 'part') { // 权限是part  而且除去了王火荣和杨朔 写死部门 不写死业务员
+        this.judgePermit = false // 权限是part 不显示部门选择的控件 并且写死了部门选项的值
+        this.department1 = window.localStorage.getItem('globalDepart1')
+        this.department2 = window.localStorage.getItem('globalDepart2') // 第二个部门为null因为该领导只有一个部门
+        this.merchantStaff = null // 该部门下员工不限制
       } else {
-        this.judgePermit = false // 不显示部门选择的控件 并且写死了部门选项的值
+        alert('There is no related staff info, please contact the admin!')
       }
-      // if (back.data[0].permit === 'all') { // 黄忠伟 陈凯奇权限
-      //   this.judgePermit = true
-      //   this.department[0] = null // 表示可以返回全部部门的数据
-      // } else {
-      //   this.judgePermit = false // 不显示部门选择的控件 并且写死了部门选项的值
-      // }
     },
-    /**
-     * 根据openid获取姓名 部门
-     */
-    async getNameAndDepart () {
-      var _this = this
-      if (window.localStorage.getItem('globalOpenid')) {
-        this.openid = window.localStorage.getItem('globalOpenid')
-      } else {
-        this.openid = this.$route.params.openid
-      }
-      var param = {'openid': this.openid}
-      var test = await this.$axios.post(this.staffInforUrl, param)
-      console.log('print the test content', test.data.list[0])
-      _this.merchantStaff = test.data.list[0].name
-      _this.department[0] = test.data.list[0].deptname
-    },
+    // /**
+    //  * 根据openid获取姓名 部门
+    //  */
+    // async getNameAndDepart () {
+    //   var _this = this
+    //   if (window.localStorage.getItem('globalOpenid')) {
+    //     this.openid = window.localStorage.getItem('globalOpenid')
+    //   } else {
+    //     this.openid = this.$route.params.openid
+    //   }
+    //   var param = {'openid': this.openid}
+    //   var test = await this.$axios.post(this.staffInforUrl, param)
+    //   console.log('print the test content', test.data.list[0])
+    //   _this.merchantStaff = test.data.list[0].name
+    //   _this.department[0] = test.data.list[0].deptname
+    // },
     /**
     * 时间格式化
     */
@@ -188,7 +197,8 @@ export default {
         this.department[0] = null
       }
       var paramValidClient = {
-        'merchantDepartment': this.department[0],
+        'merchantDepartment1': this.department1,
+        'merchantDepartment2': this.department2,
         'merchantStaff': this.merchantStaff,
         'currentLevel': this.currentLevel[0],
         'start': this.startTime,
@@ -217,8 +227,10 @@ export default {
       if (this.department[0] === '全部') {
         this.department[0] = null
       }
+      this.department1 = this.department[0]
       var paramValidClient = {
-        'merchantDepartment': this.department[0],
+        'merchantDepartment1': this.department[0],
+        'merchantDepartment2': '',
         'merchantStaff': this.merchantStaff,
         'currentLevel': this.currentLevel[0],
         'start': this.startTime,
@@ -261,7 +273,8 @@ export default {
         this.department[0] = null
       }
       var paramValidClient = {
-        'merchantDepartment': this.department[0],
+        'merchantDepartment1': this.department1,
+        'merchantDepartment2': this.department2,
         'merchantStaff': this.merchantStaff,
         'currentLevel': this.currentLevel[0],
         'start': this.startTime,
@@ -290,7 +303,8 @@ export default {
         this.department[0] = null
       }
       var paramValidClient = {
-        'merchantDepartment': this.department[0],
+        'merchantDepartment1': this.department1,
+        'merchantDepartment2': this.department2,
         'merchantStaff': this.merchantStaff,
         'currentLevel': this.currentLevel[0],
         'start': this.startTime,
@@ -319,20 +333,22 @@ export default {
      *        状态默认为有效
      */
     async loadData () {
-      await this.getNameAndDepart()
+      // await this.getNameAndDepart()
       await this.getPermission()
       var _this = this
       var paramValidClient = {
-        'merchantDepartment': this.department[0],
+        'merchantDepartment1': this.department1,
+        'merchantDepartment2': this.department2,
         'merchantStaff': this.merchantStaff,
         'currentLevel': this.currentLevel[0],
         'start': this.startTime,
         'end': this.endTime,
         'clientstate': '有效'
       }
+      console.log('print the send param:', paramValidClient)
       this.$axios.post('/customerManage/validClientCompute', paramValidClient).then((resp) => {
         if (resp.status === 200) {
-          console.log('print the return data:', resp.data)
+          console.log('print the return valid client data:', resp.data)
           _this.respCountData = resp.data
           // 用一个for循环遍历全部的时间然后格式化
           for (let i = 0; i < _this.respCountData.length; i++) {

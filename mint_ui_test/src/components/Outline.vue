@@ -5,7 +5,6 @@
     <br>
     <group>
       <popup-picker :title="departmentshow" :data="departmentList" v-model="department" @on-change="onChangeDepart" v-if="judgePermit"></popup-picker>
-      <!--<popup-picker :title="departmentshow" :data="departmentList" v-model="department" @on-change="onChangeDepart"></popup-picker>-->
     </group>
     <group >
       <x-switch :title="$t('客户状态')" :inline-desc="statement + ''" v-model="state" @on-change="changeClientState"></x-switch>
@@ -23,7 +22,6 @@
         :title="$t('请选择终止时间')"
         @on-confirm="onConfirmEnd"></datetime>
     </group>
-    <!--<load-more :show-loading="false" background-color="#fbf9fe"></load-more>-->
     <divider>^</divider>
     <div v-for="(data , i) in respData" :key="i" style="padding:0 5px;" @click="seeDetail(respData[i].id)" >
       <x-table  :full-bordered="true" :cell-bordered="false" :content-bordered="true"  style="background-color:#fff;">
@@ -32,30 +30,25 @@
           <td style="font-weight: 600">部门:</td>
           <td style="font-weight: 600">{{data.merchantDepartment}}</td>
           <td style="font-weight: 600">日期:</td>
-          <!--<td style="font-weight: 600">{{// data.dateTime}}</td>-->
           <td style="font-weight: 600">{{data.dateTime.substr(0, 10)}}</td>
-          <!--<td> x 1</td>-->
         </tr>
         <tr>
           <td style="font-size: 15px; color: #181818 ">招商人员:</td>
           <td style="font-size: 15px">{{data.merchantStaff}}</td>
           <td style="font-size: 15px">客户名称:</td>
           <td style="font-size: 15px">{{data.clientName}}</td>
-          <!--<td> x 2</td>-->
         </tr>
         <tr>
           <td style="font-size: 15px">电话沟通:</td>
           <td style="font-size: 15px">{{data.phoneVisit}}</td>
           <td style="font-size: 15px">是否带看:</td>
           <td style="font-size: 15px; color: #CE3C39; ">{{data.takeVisit}}</td>
-          <!--<td> x 2</td>-->
         </tr>
         <tr>
           <td style="font-size: 15px">需求面积:</td>
           <td style="font-size: 15px">{{data.needSquare}}</td>
           <td style="font-size: 15px">客户等级:</td>
           <td style="font-size: 15px; color: #CE3C39; ">{{data.currentLevel}}</td>
-          <!--<td> x 2</td>-->
         </tr>
         </tbody>
       </x-table>
@@ -86,6 +79,8 @@ export default {
       staffInforUrl: 'https://dropdbandescape.parkwing.cn/codiv/role_employee/details',
       // 选择部门组件
       department: [],
+      department1: null,
+      department2: null,
       departmentshow: '请选择部门',
       departmentList: [['全部', '事业一部', '事业二部', '事业三部', '事业四部', '事业五部', '事业六部', '项目发展部']],
       // 客户状态需要用到的字段
@@ -118,52 +113,51 @@ export default {
      *        结束之间：不设置
      *        后台处理可以可能为空的情况
      */
+    // this.initStaffAndDepart()
     this.loadData()
   },
   methods: {
+    // /**
+    //  * 从缓存中将姓名部门存入本页面变量
+    //  */
+    // initStaffAndDepart () {
+    //   this.merchantStaff = window.localStorage.getItem('globalStaff')
+    //   this.department1 = window.localStorage.getItem('globalDepart1')
+    //   this.department2 = window.localStorage.getItem('globalDepart2')
+    // },
     /**
      * 根据姓名获取权限
      */
     async getPermission () {
-      var username = this.merchantStaff
+      var username = window.localStorage.getItem('globalStaff')
       var paramUserName = {
         'username': username
       }
       var back = await this.$axios.post('/customerManagePermit/outlinePermit', paramUserName)
-      // console.log('print the gerPermission data:', back.data[0].permit)
-      if (back.data.length === 0) { // 不存在表中 就是普通权限
-        this.judgePermit = false // 不显示部门选择的控件
-      } else if (back.data[0].permit === 'all') { // 黄忠伟 陈凯奇权限
-        this.judgePermit = true // 显示部门选择的控件
-        this.department[0] = null // 表示可以返回全部部门的数据
-        this.merchantStaff = null
+      if (back.data.length === 0) { // 不在权限表中 就是普通员工
+        this.judgePermit = false
+        this.department1 = window.localStorage.getItem('globalDepart1') // 部门写死
+        this.department2 = window.localStorage.getItem('globalDepart2')
+        this.merchantStaff = window.localStorage.getItem('globalStaff') // 员工写死
+        window.localStorage.setItem('globalPermit', 'staff')
+      } else if (back.data[0].permit === 'all') { // 最高权限 黄忠伟 陈凯奇权限
+        this.judgePermit = true // 允许选择部门 因为没有部门选择所以没用到这个
+        this.department1 = null // 表示可以返回全部部门的数据
+        this.department2 = null // 表示可以返回全部部门的数据
+        this.merchantStaff = null // 员工不受限制
+      } else if (this.merchantStaff === '王火荣' || this.merchantStaff === '杨朔') {
+        this.judgePermit = false // 不显示部门选择控件
+        this.department1 = window.localStorage.getItem('globalDepart1') // 这位领导有两个部门
+        this.department2 = window.localStorage.getItem('globalDepart2')
+        this.merchantStaff = null // 该部门下员工不限制
+      } else if (back.data[0].permit === 'part') { // 权限是part  而且除去了王火荣和杨朔 写死部门 不写死业务员
+        this.judgePermit = false // 权限是part 不显示部门选择的控件 并且写死了部门选项的值
+        this.department1 = window.localStorage.getItem('globalDepart1')
+        this.department2 = window.localStorage.getItem('globalDepart2') // 第二个部门为null因为该领导只有一个部门
+        this.merchantStaff = null // 该部门下员工不限制
       } else {
-        this.judgePermit = false // 不显示部门选择的控件 并且写死了部门选项的值
-        this.merchantStaff = null // 当前部门下的全部员工都可以出现
+        alert('There is no related staff info, please contact the admin!')
       }
-      // if (back.data[0].permit === 'all') { // 黄忠伟 陈凯奇权限
-      //   this.judgePermit = true
-      //   this.department[0] = null // 表示可以返回全部部门的数据
-      // } else {
-      //   this.judgePermit = false // 不显示部门选择的控件 并且写死了部门选项的值
-      // }
-    },
-    /**
-     * 根据openid获取姓名 部门
-     */
-    async getNameAndDepart () {
-      var _this = this
-      if (window.localStorage.getItem('globalOpenid')) {
-        this.openid = window.localStorage.getItem('globalOpenid')
-      } else {
-        this.openid = this.$route.params.openid
-      }
-      var param = {'openid': this.openid}
-      // var test = await this.$axios.post(this.staffInforUrl, param)
-      var test = await this.$axios.post(this.staffInforUrl, param)
-      console.log('print the test content', test.data.list[0])
-      _this.merchantStaff = test.data.list[0].name
-      _this.department[0] = test.data.list[0].deptname
     },
     /**
      *  判断权限
@@ -173,46 +167,6 @@ export default {
      *
      *        发送请求到后台  查询数据库中 tab_conclusion_permit 对应的名字所有的权限和部门
      */
-    // judgePermission () {
-    //   var _this = this
-    //   this.openid = this.$route.params.openid
-    //   // console.log('print the openid:', this.openid)
-    //   var param = {'openid': this.openid}
-    //   var username = ''
-    //   this.$axios.post(this.staffInforUrl, param).then((resp) => {
-    //     if (resp.status === 200) {
-    //       // 如果状态200 就赋值部门和园区信息
-    //       _this.merchantStaff = resp.data.list[0].name
-    //       _this.merchantDepartment = resp.data.list[0].deptname
-    //       username = resp.data.list[0].name
-    //       // depart = resp.data.list[0].deptname
-    //       console.log(_this.merchantStaff)
-    //       console.log('print in the username:', username)
-    //       console.log(_this.merchantDepartment)
-    //       /**
-    //        * 这里请求的顺序很有趣
-    //        * @type {{username: (*|string)}}
-    //        */
-    //       var paramUserName = {
-    //         'username': username
-    //       }
-    //       this.$axios.post('/customerManagePermit/outlinePermit', paramUserName).then((resp) => {
-    //         console.log('print the back data:', resp.data)
-    //         if (resp.status === 200 && !resp.data) {
-    //           if (resp.data[0] === 'all') {
-    //             this.judgePermit = true
-    //             this.department[0] = null
-    //           }
-    //         } else {
-    //           this.judgePermit = false
-    //           this.department[0] = this.merchantDepartment
-    //           console.log('print the insert depart', this.department[0])
-    //         }
-    //       })
-    //     }
-    //   })
-    //   console.log('print out the username:', username)
-    // },
     /**
      * 选择部门
      */
@@ -223,12 +177,14 @@ export default {
       if (this.department[0] === '全部') {
         this.department[0] = null
       }
-      console.log('打印一下选择的值', this.department)
+      this.department1 = this.department[0]
+      console.log('打印一下选择的值', this.department[0])
       if (this.clientState === '') { // 处理第一次选择时 客户状态为空时的判断
         this.clientState = '有效'
       }
       var params = {
-        'merchantDepartment': this.department[0],
+        'merchantDepartment1': this.department[0],
+        'merchantDepartment2': '',
         'clientstate': this.clientState,
         'start': this.startTime,
         'end': this.endTime
@@ -270,7 +226,8 @@ export default {
         this.clientState = '有效'
       }
       var params = {
-        'merchantDepartment': this.department[0],
+        'merchantDepartment1': this.department1,
+        'merchantDepartment2': this.department2,
         'merchantStaff': this.merchantStaff,
         'clientstate': this.clientState,
         'start': this.startTime,
@@ -300,7 +257,8 @@ export default {
         this.clientState = '有效'
       }
       var params = {
-        'merchantDepartment': this.department[0],
+        'merchantDepartment1': this.department1,
+        'merchantDepartment2': this.department2,
         'merchantStaff': this.merchantStaff,
         'clientstate': this.clientState,
         'start': this.startTime,
@@ -323,7 +281,7 @@ export default {
      *       order
      */
     async loadData () {
-      await this.getNameAndDepart()
+      // await this.getNameAndDepart()
       await this.getPermission()
       // 正式加载数据
       var _this = this
@@ -331,7 +289,8 @@ export default {
         this.clientState = '有效'
       }
       var params = {
-        'merchantDepartment': this.department[0],
+        'merchantDepartment1': this.department1,
+        'merchantDepartment2': this.department2,
         'merchantStaff': this.merchantStaff,
         'clientstate': this.clientState,
         'start': this.startTime,
@@ -363,7 +322,8 @@ export default {
         this.statement = '不活跃'
       }
       var params = {
-        'merchantDepartment': this.department[0],
+        'merchantDepartment1': this.department1,
+        'merchantDepartment2': this.department2,
         'merchantStaff': this.merchantStaff,
         'clientstate': this.statement,
         'start': this.startTime,

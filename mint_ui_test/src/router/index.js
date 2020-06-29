@@ -8,6 +8,7 @@ import Statis from '../components/Statis'
 import ValidClientInfo from '../components/ValidClientInfo'
 import Rank from '../components/Rank'
 import StatisAndRank from '../components/StatisAndRank'
+import Null from '../components/Null'
 
 Vue.use(Router)
 
@@ -35,6 +36,9 @@ export default new Router({
       name: 'outline',
       path: '/outline',
       component: Outline
+      // meta: {
+      //   keepAlive: true
+      // }
     },
     {
       name: 'statis',
@@ -45,6 +49,9 @@ export default new Router({
       name: 'validclientinfo',
       path: '/validclientinfo',
       component: ValidClientInfo
+      // meta: {
+      //   keepAlive: true
+      // }
     },
     {
       name: 'rank',
@@ -55,6 +62,21 @@ export default new Router({
       name: 'statisdandrank',
       path: '/statisAndRank',
       component: StatisAndRank
+    },
+    {
+      name: 'null',
+      path: '/null',
+      component: Null
     }
   ]
+  // scrollBehavior (to, from, savedPosition) {
+  //   if (savedPosition) {
+  //     return savedPosition
+  //   } else {
+  //     return {
+  //       x: 0,
+  //       y: 0
+  //     }
+  //   }
+  // }
 })

@@ -1,41 +1,20 @@
 <template>
   <div>
-  <!--<mt-header fixed title="营销团队工作汇总"></mt-header>-->
-  <br>
-  <x-header class="header" :left-options="{showBack: false}">客户管理</x-header>
-  <br>
-  <div>
-    <!--<mt-search-->
-      <!--v-model="value"-->
-      <!--cancel-text="取消"-->
-      <!--placeholder="搜索">-->
-    <!--</mt-search>-->
-    <!--<search-->
-      <!--placeholder="请输入客户名称"-->
-      <!--@result-click="resultClick"-->
-      <!--@on-change="getResult"-->
-      <!--:results="resultsList"-->
-      <!--v-model="value"-->
-      <!--top="46px"-->
-      <!--auto-fixed="false"-->
-      <!--auto-scroll-to-top="true"-->
-      <!--cancel-text="取消"-->
-      <!--position="absolute"-->
-      <!--ref="search">-->
-    <!--</search>-->
-    <!--<group>-->
-      <!--<cell></cell>-->
-    <!--</group>-->
+    <br>
+      <x-header class="header" :left-options="{showBack: false}">客户管理</x-header>
+    <br>
+    <div>
     <group label-width="4.5em" label-margin-right="2em" label-align="right">
-    <!--<group label-width="4.5em" label-margin-right="2em" label-align="right">-->
       <box gap="5px 10px">
         <flexbox>
           <flexbox-item>
           </flexbox-item>
           <flexbox-item>
+          <!--</flexbox-item>-->
+          <!--<flexbox-item>-->
           </flexbox-item>
           <flexbox-item>
-            <x-button @click.native="temporartySave">临时保存</x-button>
+            <x-button plain type="primary" style="border-radius:99px;" @click.native="temporartySave">临时保存</x-button>
           </flexbox-item>
         </flexbox>
       </box>
@@ -52,75 +31,42 @@
         :trigger-on-focus="false"
         placeholder="请输入客户名称"
         @select="handleSelect"></el-autocomplete>
-      <!--<x-input title="客户名称" v-model="value1"></x-input>-->
       <datetime title="当前日期" v-model="datetime" placeholder="请选择时间" value-text-align="left"></datetime>
-      <!--<x-input title="客户状态" placeholder="请输入客户状态" v-model="clientState"></x-input>-->
       <popup-picker :title="clientState1" :data="clientState9" v-model="clientStateTest" @on-change="onChangeClientState" :placeholder="$t('请选择客户状态')" value-text-align="left"></popup-picker>
       <popup-picker :title="clientStyle1" :data="clientStyle9" v-model="clientStyleTest" @on-change="onChangeClientStyle" :placeholder="$t('请选择类型')" value-text-align="left"></popup-picker>
       <popup-picker :title="clientIndustry1" :data="clientIndustry9" v-model="clientIndustryTest" @on-change="onChangeClientIndustry" :placeholder="$t('请选择行业')" value-text-align="left"></popup-picker>
-      <!--<popup-radio class="radioStyle" title="客户类型" :options="clientStyle8" v-model="clientStyle" placeholder="请选择类型" value-text-align="left"></popup-radio>-->
       <x-input title="联系方式" type="number" placeholder="请输入联系方式" v-model="contactNumber" value-text-align="left"></x-input>
-      <!--<x-input title="手机号码" name="mobile" placeholder="请输入手机号码" keyboard="number" is-type="china-mobile"></x-input>-->
       <x-input title="联系人员" placeholder="请输入联系人员" v-model="contactStaff"></x-input>
       <popup-picker title="人员职称" :data="personTitleP6" v-model="personTitleP" placeholder="请选择人员职称" value-text-align="left"></popup-picker>
-      <!--<popup-radio title="人员职称" :options="personTitle6" v-model="personTitle" placeholder="请选择人员职称" value-text-align="left"></popup-radio>-->
       <popup-picker title="来源渠道" :data="sourceChannelP2" v-model="sourceChannelP" placeholder="请选择来源渠道" value-text-align="left"></popup-picker>
-      <!--<popup-radio title="来源渠道" :options="sourceChannel2" v-model="sourceChannel" placeholder="请选择来源渠道"></popup-radio>-->
       <popup-picker title="电话沟通" :data="phoneVisitP3" v-model="phoneVisitP" placeholder="请选择是否沟通" value-text-align="left"></popup-picker>
-      <!--<popup-radio title="电话沟通" :options="phoneVisit3" v-model="phoneVisit" placeholder="请选择是否电话沟通"></popup-radio>-->
       <popup-picker title="带&emsp;&emsp;看" :data="takeVisitP4" v-model="takeVisitP" placeholder="请选择是否带看" value-text-align="left"></popup-picker>
-      <!--<popup-radio title="是否带看" :options="takeVisit4" v-model="takeVisit" placeholder="请选择是否带看"></popup-radio>-->
       <x-input title="需求面积" type="number" placeholder="请输入需求面积" v-model="needSquare" :disabled="styleQudao" v-if="styleQudao2"></x-input>
       <x-input title="价&emsp;&emsp;格" type="number" placeholder="请输入预估价格" v-model="price" :disabled="styleQudao" v-if="styleQudao2"></x-input>
       <popup-picker title="意向园区" :data="wantParkP2" v-model="wantParkP" placeholder="请选择意向园区" @on-hide="pickPark" value-text-align="left" :disabled="styleQudao" v-if="styleQudao2"></popup-picker>
-      <!--<popup-radio title="意向园区" :options="wantPark2" v-model="wantPark" placeholder="请选择意向园区"  @on-hide="pickPark"></popup-radio>-->
       <popup-picker title="意向楼座" :data="wantBuildingP2" v-model="wantBuildingP" placeholder="请选择意向楼座" value-text-align="left" :disabled="styleQudao" v-if="styleQudao2"></popup-picker>
-      <!--<popup-radio title="意向楼座" :options="wantBuilding2" v-model="wantBuilding" placeholder="请选择意向楼座" @on-show="pickBuilding(wantPark)"></popup-radio>-->
       <datetime title="预计成交" v-model="predictDealTime" placeholder="请选择预计时间" value-text-align="left" v-if="styleQudao2"></datetime>
       <x-textarea title="客户情况" placeholder="请填写详细信息" v-model="clientinfo" :show-counter="false" :rows="3"></x-textarea>
       <x-textarea title="所遇困难" placeholder="请填写详细信息" v-model="currentproblem" :show-counter="false" :rows="3"></x-textarea>
       <x-textarea title="需求支持" placeholder="请填写详细信息" v-model="requiredsupport" :show-counter="false" :rows="3"></x-textarea>
       <popup-picker title="当前等级" :data="currentLevelP4" v-model="currentLevelP" placeholder="请选择当前等级" value-text-align="left"></popup-picker>
-      <!--<popup-radio title="当前等级" :options="currentLevel4" v-model="currentLevel" placeholder="请选择当前等级" value-text-align="left"></popup-radio>-->
       <x-input title="招商人员" placeholder="请输入招商人员" disabled="true" v-model="merchantStaff"></x-input>
       <x-input title="招商部门" placeholder="请输入招商部门" disabled="true" v-model="merchantDepartment"></x-input>
     </group>
-    <!--尝试下新的表单-->
   </div>
-    <!--<div v-transfer-dom>-->
     <div>
       <confirm v-model="show"
                :title="$t('是否加载上次临时保存的数据')"
                @on-cancel="onCancel"
                @on-confirm="onConfirm">
-        <!--<p style="text-align:center;">{{ $t('Are you sure?') }}</p>-->
       </confirm>
     </div>
-  <!--<div class="container" style="display:inline-block">-->
-    <!--提交时判断必选项，除了预计成交时间 困难 需求支持，其余都为必须 还需要判断面积和价格的两位小数-->
       <box gap="20px 40px">
       <flexbox>
         <flexbox-item><div class="flex-demo"><x-button  @click.native="add">确认修改</x-button></div></flexbox-item>
         <flexbox-item gap="40px 40px"><div class="flex-demo"><x-button type="warn" @click.native="clear">清空</x-button></div></flexbox-item>
       </flexbox>
       </box>
-      <!--<flexbox>-->
-        <!--<flexbox-item>-->
-          <!--<x-button type="primary" @click.native="add">确认修改</x-button>-->
-        <!--</flexbox-item>-->
-        <!--<flexbox-item>-->
-          <!--<x-button type="warn" @click.native="clear">清空</x-button>-->
-        <!--</flexbox-item>-->
-      <!--</flexbox>-->
-    <!--<mt-button class="confirmButton"  style="color: #FFFFFF" type="primary" @click.native="add">确认修改</mt-button>-->
-  <!--</div>-->
-  <!--<div class="content" style="display:inline-block">-->
-
-    <!--<mt-button class="clearButton"  type="danger" @click.native="clear">清空</mt-button>-->
-  <!--</div>-->
-      <!--<div style="padding: 15px;">-->
-        <!--<x-button @click.native="showLoading" type="primary">{{ $t('Show loading') }}</x-button>-->
-      <!--</div>-->
 </div>
 </template>
 
@@ -174,8 +120,6 @@ export default {
       show2: false,
       styleQudao: false,
       styleQudao2: true,
-      resultsList: [{title: 'A'}, {title: 'B'}, {title: 'C'}, {title: 'D'}],
-      results: [{'熊大': 1}],
       value: '',
       test: '运维',
       clientStyle1: '客户类型',
@@ -184,7 +128,6 @@ export default {
       // 固定的下拉框
       currentLevel4: ['A', 'B', 'C'],
       currentLevelP4: [['A', 'B', 'C']],
-      // currentLevel4: ['小米', 'iPhone', '华为', '情怀', '三星', '其他', '不告诉你'],
       sourceChannel2: ['中介推介', '微信推介', '网络广告', '楼宇广告', '全员招商', '其他来源'],
       sourceChannelP2: [['中介推介', '微信推介', '网络广告', '楼宇广告', '全员招商', '其他来源']],
       phoneVisit3: ['是', '否'],
@@ -306,7 +249,7 @@ export default {
      * 页面加载时 判断是否存在缓存 如果存在就弹窗提示是否要加载上次录入的数据
      */
     loadTemporaryData () {
-      console.log('pritn the data:', window.localStorage.getItem('temporary'))
+      // console.log('pritn the data:', window.localStorage.getItem('temporary'))
       if (window.localStorage.getItem('temporary') !== null) {
         this.show = true
       }
@@ -362,19 +305,8 @@ export default {
       // console.log('print the tempData dateTime:', tempData.get('dataTime'))
     },
     /**
-     * 测试用
+     * 初始化时间
      */
-    // resultClick (item) {
-    //   window.alert('you click the result item: ' + JSON.stringify(item))
-    // },
-    showLoading () {
-      this.$vux.loading.show({
-        text: 'Loading'
-      })
-      setTimeout(() => {
-        this.$vux.loading.hide()
-      }, 2000)
-    },
     initDatetime () {
       // var d = new Date(Date.now() + 1 * 24 * 60 * 60 * 1000)
       var d = new Date(Date.now())
@@ -408,10 +340,9 @@ export default {
     },
     onChangeClientStyle (val) {
       this.clientStyle = val
-      console.log('print hte val:', val)
-      console.log('print hte this.clientStyle[0]:', this.clientStyle[0])
+      // console.log('print hte val:', val)
+      // console.log('print hte this.clientStyle[0]:', this.clientStyle[0])
       if (this.clientStyle[0] === '渠道') {
-        console.log('stop the conetent square')
         this.styleQudao = true
         this.styleQudao2 = false
       } else {
@@ -423,23 +354,16 @@ export default {
       this.clientIndustry = val
     },
     datetimeConfirm (val) {
-      console.log('打印下condirm时间：', val)
       this.datetime = val
     },
     datetimechange (val) {
-      console.log('打印下时间：', val)
       this.datetime = val
-    },
-    log (str1, str2 = '') {
-      console.log(str1, str2)
-      // console.log('当前时间：', this.datetime)
     },
     /**
      * 添加判断：
      * 1. 如果当前用户和这条记录的输入用户信息不一致就不触发这个自动获得的功能
      */
     handleSelect (item) {
-      // this.showLoading()
       if (this.merchantStaff !== item.merchantStaff) {
         this.clear()
         // console.log('print the merchantstaff the same:', this.merchantStaff !== item.merchantStaff)
@@ -448,36 +372,21 @@ export default {
       }
       // 先清空
       this.clear()
-      console.log('item是什么999999999999999999', item)
-      // console.log(item)
-      // this.sourceChannel = item.sourceChannel
       this.sourceChannelP.push(item.sourceChannel)
-      // this.phoneVisit = item.phoneVisit
       this.phoneVisitP.push(item.phoneVisit)
-      // this.takeVisit = item.takeVisit
       this.takeVisitP.push(item.takeVisit)
-      // this.personTitle = item.personTitle
       this.personTitleP.push(item.personTitle)
-      // this.clientStyle = item.clientStyle
       this.clientStyleTest.push(item.clientStyle)
       this.clientIndustryTest.push(item.clientindustry)
       this.datetime = this.timestampToTime(item.datetime)
-      // console.log('打印一下这个赋值后的日期')
-      // console.log(this.datetime)
       this.clientName = item.clientname
       this.contactNumber = item.contactNumber
       this.contactStaff = item.contactStaff
       this.needSquare = item.needSquare
       this.price = item.price
-      // this.wantPark = item.wantPark
-      console.log('print the item.wantPark', item.wantPark1)
       this.wantParkP.push(item.wantPark1)
       this.pickPark()
-      // this.wantBuilding = item.wantBuilding
       this.wantBuildingP[0] = (item.wantBuilding1)
-      // this.wantBuildingP.push(item.wantBuilding)
-      // console.log('打印一下这个赋值后的楼座')
-      // console.log(this.wantBuilding)
       if (item.predictdealtime1 === '') {
         this.predictDealTime = null
       } else {
@@ -485,7 +394,6 @@ export default {
       }
       this.currentproblem = item.currentproblem1
       this.requiredsupport = item.requiredsupport1
-      // this.currentLevel = item.currentLevel
       this.currentLevelP.push(item.currentLevel)
       this.merchantStaff = item.merchantStaff
       this.merchantDepartment = item.merchantDepartment
@@ -497,15 +405,10 @@ export default {
      */
     querySearch (queryString, cb) {
       console.log('打印下发送的queryString是什么', queryString)
-      // this.$axios.post('http://localhost:8443/api/search?keywords=' + queryString).then((resp) => {
       var paramQuery = {
         'keywords': queryString,
         'merchantStaff': this.merchantStaff
       }
-      // console.log('打印下发送的paramQuery是什么', paramQuery)
-      // this.$axios.post('http://localhost:6501/customerManage/search', queryString).then((resp) => {
-      // this.$axios.post('http://localhost:6501/customerManage/search', paramQuery).then((resp) => {
-      // this.$axios.post('http://dropdbandescape.parkwing.cn/codiv/customerManage/search', paramQuery).then((resp) => {
       this.$axios.post('/customerManage/search', paramQuery).then((resp) => {
         console.log('打印下发送的paramQuery是什么', paramQuery)
         if (resp.status === 200) {
@@ -516,152 +419,6 @@ export default {
           }
           cb(tempResult)
         }
-        // if (resp.status === 200) {
-        //   // var temp = [] // 用于临时存储数据
-        //   var tempResult = [] // 用于存储最终的呈现列表
-        //   console.log('打印一下模糊查询的返回值', resp.data)
-        //   // 遍历数组 1.先判断是否有属于自己的客户 有就留下来 2.再次遍历 如果客户已经存在了就不放进去否则就放进去
-        //   // 这里还要添加一次重复判断 万一都是自己的客户但是是重复的
-        //   for (let i = 0; i < resp.data.length; i++) {
-        //     if (tempResult.length !== 0 && resp.data[i].merchantStaff === this.merchantStaff) { // 长度不为零且是自己客户要看下这个客户是否已经存在了
-        //       for (let j = 0; j < tempResult.length; j++) {
-        //         if (tempResult[j].clientname === resp.data[i].clientname) { // 客户名已经存在就跳过
-        //           console.log('跳过的重复的客户名：', resp.data[i].clientname)
-        //           break
-        //         }
-        //       }
-        //     } else if (tempResult.length === 0 && resp.data[i].merchantStaff === this.merchantStaff) {
-        //       tempResult.push(resp.data[i])
-        //       console.log('成功进入的客户名：', resp.data[i].clientname)
-        //     }
-        //     // if (resp.data[i].merchantStaff === this.merchantStaff) {
-        //     //   tempResult.push(resp.data[i])
-        //     //   // tempResult[i].value = resp.data[i].clientname
-        //     // }
-        //   }
-        //   console.log('print 是自己的客户:', tempResult)
-        //   /**
-        //    * 1.先判断tempResult是否存在长度
-        //    *    如果存在长度    遍历resp.data 由于是倒序排列 所以只需要留下第一条 第二条同样的用户名就删掉
-        //    *    如果不存在长度   就先插入第一条数据
-        //    */
-        //   if (tempResult.length !== 0) {
-        //     // tempResult.push(resp.data[0])
-        //     console.log('print the no-null tempResult')
-        //     for (let i = 0; i < resp.data.length; i++) {
-        //       for (let j = 0; j < tempResult.length; j++) {
-        //         if (resp.data[i].clientname === tempResult[j].clientname) {
-        //           console.log('print the same clientname:', resp.data[i].clientname)
-        //           break
-        //         } else {
-        //           console.log('print the diff clientname:', resp.data[i].clientname)
-        //           if (j === tempResult.length - 1) {
-        //             tempResult.push(resp.data[i])
-        //           }
-        //         }
-        //       }
-        //     }
-        //   } else {
-        //     console.log('print the null tempResult')
-        //     tempResult.push(resp.data[0])
-        //     for (let i = 0; i < resp.data.length; i++) {
-        //       for (let j = 0; j < tempResult.length; j++) {
-        //         if (resp.data[i].clientname === tempResult[j].clientname) {
-        //           console.log('print the same clientname:', resp.data[i].clientname)
-        //           break
-        //         } else {
-        //           console.log('print the diff clientname:', resp.data[i].clientname)
-        //           if (j === tempResult.length - 1) {
-        //             tempResult.push(resp.data[i])
-        //           }
-        //         }
-        //       }
-        //     }
-        //   }
-        //   // for (let i = 0; i < resp.data.length; i++) {
-        //   //   for (let j = 0; j < tempResult.length; j++) {
-        //   //     if (resp.data[i].clientname === tempResult[j].clientname) {
-        //   //       console.log('print the same clientname:', resp.data[i].clientname)
-        //   //       break
-        //   //     } else {
-        //   //       console.log('print the diff clientname:', resp.data[i].clientname)
-        //   //       if (j === tempResult.length - 1) {
-        //   //         tempResult.push(resp.data[i])
-        //   //       }
-        //   //     }
-        //   //   }
-        //   // }
-        //   if (tempResult[0] !== undefined) {
-        //     console.log('print the new tempResult length:', tempResult.length)
-        //     console.log('print the new tempResult:', tempResult)
-        //     for (let i = 0; i < tempResult.length; i++) {
-        //       tempResult[i].value = tempResult[i].clientname
-        //     }
-        //     console.log('pritn has the value========:', tempResult)
-        //     cb(tempResult)
-        //   } else {
-        //     var tempNull = [{value: '暂无内容'}]
-        //     cb(tempNull)
-        //   }
-        //   // console.log('print the new tempResult:', tempResult)
-        //   // for (let i = 0; i < tempResult.length; i++) {
-        //   //   tempResult[i].value = tempResult[i].clientname
-        //   // }
-        //   // cb(tempResult)
-        //   // var j = 0
-        //   // for (let i of temp) {
-        //   //   i.value = temp[j].clientname
-        //   //   j++
-        //   // }
-        //   // console.log('222222222:', resp.data)
-        //   // var j = 0
-        //   // for (let i of resp.data) {
-        //   //   i.value = resp.data[j].clientname
-        //   //   j++
-        //   // }
-        //   // // console.log('222222222:', resp.data)
-        //   // cb(resp.data)
-        //   /**
-        //    * 新建一个temp 存储已经存在的clientname
-        //    * 每次进来一个数据就判断是否在temp中
-        //    */
-        //   // var temp = []
-        //   // for (let i of resp.data) {
-        //   //   console.log('i:', i.clientName)
-        //   //   // for (let j = 0; j < temp.length; j++) {
-        //   //   //   if(temp[j] == re){
-        //   //   //
-        //   //   //   }
-        //   //   // }
-        //   // }
-        //   // let j = 0
-        //   // var temp = []
-        //   // for (let i of resp.data) {
-        //   //   // var temp = []
-        //   //   i.value = resp.data[j].clientName
-        //   //   /**
-        //   //    * 遍历temp 判断是否存在重复
-        //   //    * 如果存在重复就从resp.data中删除
-        //   //    * 这里有break和没有break差距很大 是为什么
-        //   //    */
-        //   //   for (let m = 0; m < temp.length; m++) {
-        //   //     console.log('temp[m] === i.value值为')
-        //   //     console.log(temp[m] === i.value)
-        //   //     if (temp[m] === i.value) {
-        //   //       resp.data.splice(j, j + 1)
-        //   //       console.log('resp.data是什么')
-        //   //       console.log(resp.data)
-        //   //       break
-        //   //     }
-        //   //   }
-        //   //   temp.push(i.value)
-        //   //   j++
-        //   //   if (j === resp.data.length) {
-        //   //     break
-        //   //   }
-        //   // }
-        //   // cb(resp.data)
-        // }
       })
     },
     /** 预加载全部的数据到本地
@@ -670,9 +427,6 @@ export default {
      *  3.将添加了value的全部数据赋值给content */
     loadAll: function () {
       var _this = this
-      // this.$http.get('http://localhost:8443/api/data').then(function (resp) {
-      // 这里要改成服务器所在的端口
-      // this.$http.get('http://dropdbandescape.parkwing.cn/codiv/customerManage/all').then(function (resp) {
       this.$axios.get('/customerManage/all').then(function (resp) {
         if (resp.status === 200) {
           let j = 0
@@ -705,13 +459,6 @@ export default {
     pickPark () {
       this.buildingList = []
       this.wantBuildingP2 = []
-      // console.log('print the wantPark', this.wantPark)
-      // console.log('print the wantParkP[0]', this.wantParkP[0])
-      // var param = {
-      //   'limit': 100,
-      //   'parkname': this.wantPark,
-      //   'page': 1
-      // }
       var param = {
         'limit': 100,
         'parkname': this.wantParkP[0],
@@ -775,31 +522,22 @@ export default {
       let data = {
         dateTime: this.datetime,
         clientName: this.clientName,
-        // clientStyle: this.clientStyle,
         clientStyle: this.clientStyleTest[0],
         clientindustry: this.clientIndustryTest[0],
         contactNumber: this.contactNumber,
         contactStaff: this.contactStaff,
-        // personTitle: this.personTitle,
         personTitle: this.personTitleP[0],
-        // sourceChannel: this.sourceChannel,
         sourceChannel: this.sourceChannelP[0],
-        // phoneVisit: this.phoneVisit,
         phoneVisit: this.phoneVisitP[0],
-        // takeVisit: this.takeVisit,
         takeVisit: this.takeVisitP[0],
         needSquare: this.needSquare,
         price: this.price,
-        // wantBuilding: this.wantBuilding,
         wantBuilding: this.wantBuildingP[0],
-        // wantPark: this.wantPark,
         wantPark: this.wantParkP[0],
         predictdealtime: this.predictDealTime,
         currentproblem: this.currentproblem,
         requiredsupport: this.requiredsupport,
-        // currentLevel: this.currentLevel,
         currentLevel: this.currentLevelP[0],
-        // currentLevel: '123',
         merchantStaff: this.merchantStaff,
         merchantDepartment: this.merchantDepartment,
         clientstate: this.clientStateTest[0],
@@ -820,12 +558,6 @@ export default {
         })
         return
       }
-      // if (this.clientStyle === null) {
-      //   MessageBox.alert('类型不得为空').then(action => {
-      //
-      //   })
-      //   return
-      // }
       if (this.clientStyleTest.length === 0) {
         MessageBox.alert('客户类型不得为空').then(action => {
 
@@ -856,12 +588,6 @@ export default {
         })
         return
       }
-      // if (this.personTitle === null) {
-      //   MessageBox.alert('人员职称不得为空').then(action => {
-      //
-      //   })
-      //   return
-      // }
       if (this.personTitleP.length === 0) {
         MessageBox.alert('人员职称不得为空').then(action => {
 
@@ -979,18 +705,7 @@ export default {
         })
         return
       }
-      // if (this.currentLevel === null) {
-      //   MessageBox.alert('当前等级不得为空').then(action => {
-      //
-      //   })
-      //   return
-      // }
-      /** 打印一下发送的数据 */
-      console.log('向后台发送的数据99999999999999999999999999999999999', data)
       /** 向后台发送数据 */
-      // http://localhost:8443
-      // this.$axios.post('http://localhost:6501/customerManage',
-      // this.$axios.post('http://dropdbandescape.parkwing.cn/codiv/customerManage',
       this.$axios.post('/customerManage', data).then(function (resp) {
         console.log(resp)
         if (resp.status === 200) {
@@ -1016,18 +731,13 @@ export default {
       this.clientstate = '有效'
       this.contactNumber = null
       this.contactStaff = null
-      // this.personTitle = null
       this.personTitleP = []
-      // this.sourceChannel = null
       this.sourceChannelP = []
-      // this.phoneVisit = null
       this.phoneVisitP = []
-      // this.takeVisit = null
       this.takeVisitP = []
       this.needSquare = null
       this.predictDealTime = null
       this.currentproblem = null
-      // this.wantPark = null
       this.wantParkP = []
       // 清空的时候需要把楼座的列表也清空
       this.wantBuilding2 = []
@@ -1036,10 +746,7 @@ export default {
       this.wantBuildingP = []
       this.requiredsupport = null
       this.price = null
-      // this.currentLevel = null
       this.currentLevelP = []
-      // this.merchantStaff = null
-      // this.merchantDepartment = null
       this.clientinfo = null
     }
   }
@@ -1047,27 +754,10 @@ export default {
 </script>
 
 <style>
-  /*.radioStyle::-webkit-input-placeholder {*/
-    /*color: lightskyblue;*/
-    /*text-align: left;*/
-  /*}*/
   .header{
     margin-top: -1.5em;
   }
   .autoStyle{
     margin: 0.5em 0.1em 0.5em -1em;
   }
-  /*.confirmButton{*/
-    /*margin: 0.5em 0.5em 0.5em 5em;*/
-  /*}*/
-  /*.clearButton{*/
-    /*margin: 0.5em 0.5em 0.5em 0.5em;*/
-  /*}*/
-  /*.container {*/
-    /*float:left;*/
-  /*}*/
-  /*.content{*/
-    /*float:left;*/
-  /*}*/
-
 </style>

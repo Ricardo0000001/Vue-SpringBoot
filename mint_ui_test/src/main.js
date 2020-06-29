@@ -3,7 +3,7 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-import { Switch, Field, Header, DatetimePicker, Button, MessageBox, Picker, Cell } from 'mint-ui'
+import { Switch, Field, Header, DatetimePicker, Button, MessageBox, Picker, Cell, Search } from 'mint-ui'
 import { AjaxPlugin, Datetime, DatetimePlugin, LoadingPlugin } from 'vux'
 import Vuex from 'vuex'
 import vuexI18n from 'vuex-i18n'
@@ -50,6 +50,7 @@ Vue.component(DatetimePicker.name, DatetimePicker)
 Vue.component(Picker.name, Picker)
 Vue.component(Cell.name, Cell)
 Vue.component(Switch.name, Switch)
+Vue.component(Search.name, Search)
 
 /* eslint-disable no-new */
 new Vue({

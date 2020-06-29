@@ -64,9 +64,13 @@
             AND merchantStaff = #{merchantStaff}
         </if>
 
-        <if test="merchantDepartment != null and merchantDepartment != ''">
-            AND merchantDepartment = #{merchantDepartment}
+        <if test="(merchantDepartment1 != null and merchantDepartment1 != '') or (merchantDepartment2 != null and merchantDepartment2 != '')">
+            AND (merchantDepartment = #{merchantDepartment1} OR merchantDepartment = #{merchantDepartment2})
         </if>
+
+<!--        <if test="merchantDepartment != null and merchantDepartment != ''">-->
+<!--            AND merchantDepartment = #{merchantDepartment}-->
+<!--        </if>-->
 
         <if test="clientstate != null and clientstate != ''">
             AND clientstate = #{clientstate}
@@ -427,7 +431,9 @@ from
                 m.merchantDepartment,
                 m.datetime,
                 m.clientname,
+                n.currentLevel,
                 n.price,
+                n.clientstate,
                 n.needSquare,
                 m.phonevisitcount,
                 m.takeVisitCount from
@@ -439,40 +445,46 @@ from
                 count(if(phonevisit='是', TRUE, NULL)) AS phonevisitcount,
                 COUNT(if(takeVisit='是',TRUE, NULL)) AS takeVisitCount
                 FROM tab_conclusion_table
-                where 1=1
-                <if test="merchantStaff != null and merchantStaff != ''">
-                    AND merchantStaff = #{merchantStaff}
-                </if>
-
-                <if test="merchantDepartment != null and merchantDepartment != ''">
-                    AND merchantDepartment = #{merchantDepartment}
-                </if>
-
-                <if test="clientstate != null and clientstate != ''">
-                    AND clientstate = #{clientstate}
-                </if>
-
-                <if test="currentLevel != null and currentLevel != ''">
-                    AND currentLevel = #{currentLevel}
-                </if>
-
-                <if test="start != null and start != ''">
-                    AND datetime >= #{start, jdbcType=TIMESTAMP}
-                </if>
-
-                <if test="end != null and end != ''">
-                    <![CDATA[
-                            AND datetime <  #{end, jdbcType=TIMESTAMP}
-                    ]]>
-                </if>
                 group by clientname, merchantStaff, merchantDepartment) m
             left join
             (select id,
                     price,
                     needSquare,
+                    currentLevel,
+                    clientstate,
                     max(createtime) as createtime from tab_conclusion_table
-                    GROUP BY id, price, needSquare) n
+                    GROUP BY id, price, needSquare, currentLevel, clientstate) n
                 on m.createtime = n.createtime
+        where 1=1
+        <if test="merchantStaff != null and merchantStaff != ''">
+            AND merchantStaff = #{merchantStaff}
+        </if>
+
+        <if test="(merchantDepartment1 != null and merchantDepartment1 != '') or (merchantDepartment2 != null and merchantDepartment2 != '')">
+            AND (merchantDepartment = #{merchantDepartment1} OR merchantDepartment = #{merchantDepartment2})
+        </if>
+
+<!--        <if test="merchantDepartment != null and merchantDepartment != ''">-->
+<!--            AND merchantDepartment = #{merchantDepartment}-->
+<!--        </if>-->
+
+        <if test="clientstate != null and clientstate != ''">
+            AND clientstate = #{clientstate}
+        </if>
+
+        <if test="currentLevel != null and currentLevel != ''">
+            AND currentLevel = #{currentLevel}
+        </if>
+
+        <if test="start != null and start != ''">
+            AND datetime >= #{start, jdbcType=TIMESTAMP}
+        </if>
+
+        <if test="end != null and end != ''">
+            <![CDATA[
+                            AND datetime <  #{end, jdbcType=TIMESTAMP}
+                    ]]>
+        </if>
             group by    n.id,
                         m.merchantStaff,
                         m.merchantDepartment,
@@ -480,7 +492,9 @@ from
                         n.price,
                         n.needSquare,
                         m.phonevisitcount,
-                        m.takeVisitCount
+                        m.takeVisitCount,
+                        n.currentLevel,
+                        n.clientstate
             order by datetime DESC
     </select>
 
@@ -663,13 +677,22 @@ from
 					max(datetime) as datetime, max(createtime) as createtime from tab_conclusion_table
 
         where 1=1
+
+         <![CDATA[
+        and datetime >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+        ]]>
+
         <if test="merchantStaff != null and merchantStaff != ''">
             AND merchantStaff = #{merchantStaff}
         </if>
 
-        <if test="merchantDepartment != null and merchantDepartment != ''">
-            AND merchantDepartment = #{merchantDepartment}
+        <if test="(merchantDepartment1 != null and merchantDepartment1 != '') or (merchantDepartment2 != null and merchantDepartment2 != '')">
+            AND (merchantDepartment = #{merchantDepartment1} OR merchantDepartment = #{merchantDepartment2})
         </if>
+
+<!--        <if test="merchantDepartment2 != null and merchantDepartment2 != ''">-->
+<!--            OR merchantDepartment = #{merchantDepartment2})-->
+<!--        </if>-->
 
         <if test="clientstate != null and clientstate != ''">
             AND clientstate = #{clientstate}
@@ -681,11 +704,11 @@ from
 
         <if test="end != null and end != ''">
             <![CDATA[
-                    AND datetime <  #{end, jdbcType=TIMESTAMP}
+            AND datetime <=  #{end, jdbcType=TIMESTAMP}
             ]]>
         </if>
 
-					GROUP BY clientname,  clientindustry, clientstate) m
+        GROUP BY clientname,  clientindustry, clientstate) m
 	LEFT JOIN
 	(select clientname,  clientindustry, clientstate, merchantStaff,
 					max(datetime) as datetime, max(createtime) as createtime, needSquare from tab_conclusion_table GROUP BY clientname,  clientindustry, clientstate, merchantStaff, needSquare) n
