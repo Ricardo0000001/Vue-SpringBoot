@@ -36,7 +36,7 @@
           <td style="font-size: 15px; color: #181818 ">招商人员:</td>
           <td style="font-size: 15px">{{data.merchantStaff}}</td>
           <td style="font-size: 15px">客户名称:</td>
-          <td style="font-size: 15px">{{data.clientName}}</td>
+          <td style="font-size: 15px">{{data.clientName.substr(0, 4)}}</td>
         </tr>
         <tr>
           <td style="font-size: 15px">电话沟通:</td>

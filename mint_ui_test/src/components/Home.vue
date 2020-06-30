@@ -4,9 +4,9 @@
     <x-header class="header" :left-options="{showBack: false}">营销团队工作汇报总表</x-header>
     <br>
     <grid :show-lr-borders="false" :show-vertical-dividers="true">
-      <grid-item @on-item-click="goToAdd" :label="$t('新增')"></grid-item>
-      <grid-item @on-item-click="goToOutline" :label="$t('招商信息明细表')"></grid-item>
-      <grid-item  @on-item-click="goToValid" :label="$t('有效客户明细表')">
+      <grid-item style="font-weight: bold; font-size: 2rem" @on-item-click="goToAdd" :label="$t('新增')"></grid-item>
+      <grid-item style="font-weight: bold; font-size: 2rem" @on-item-click="goToOutline" :label="$t('招商信息明细表')"></grid-item>
+      <grid-item style="font-weight: bold; font-size: 2rem" @on-item-click="goToValid" :label="$t('有效客户明细表')">
       </grid-item>
     </grid>
     <divider>最新数据</divider>

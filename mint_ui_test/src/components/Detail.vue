@@ -8,7 +8,7 @@
         <tbody>
         <tr>
           <td>客户名称</td>
-          <td>{{data.clientName}}</td>
+          <td width="75%">{{data.clientName}}</td>
         </tr>
         <tr>
           <td>日期</td>

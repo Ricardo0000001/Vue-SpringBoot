@@ -4,20 +4,16 @@
       <x-header class="header" :left-options="{showBack: false}">客户管理</x-header>
     <br>
     <div>
-    <group label-width="4.5em" label-margin-right="2em" label-align="right">
-      <box gap="5px 10px">
         <flexbox>
+          <flexbox-item></flexbox-item>
+          <flexbox-item></flexbox-item>
+          <flexbox-item></flexbox-item>
           <flexbox-item>
-          </flexbox-item>
-          <flexbox-item>
-          <!--</flexbox-item>-->
-          <!--<flexbox-item>-->
-          </flexbox-item>
-          <flexbox-item>
-            <x-button plain type="primary" style="border-radius:99px;" @click.native="temporartySave">临时保存</x-button>
+            <x-button  mini  :gradients="['#FA8072', '#FA8072']" @click.native="temporartySave">暂存</x-button>
+            <!--<x-button  mini  :gradients="['#F4A460', '#F4A460']" @click.native="temporartySave">暂存</x-button>-->
           </flexbox-item>
         </flexbox>
-      </box>
+    <group label-width="4.5em" label-margin-right="2em" label-align="right">
       <!--<div v-transfer-dom>-->
       <div>
         <alert v-model="show2" :title="$t('临时保存成功！')" :content="$t('数据临时保存请尽快提交数据！')"></alert>
@@ -71,7 +67,7 @@
 </template>
 
 <script>import { MessageBox } from 'mint-ui'
-import { Search, PopupPicker, XTextarea, Box, Group, PopupRadio, Selector, Datetime, DatetimePlugin, XHeader, XInput, Cell, Loading, XButton, LoadingPlugin, Flexbox, FlexboxItem, Confirm, Alert } from 'vux'
+import { Search, PopupPicker, XTextarea, Box, Group, PopupRadio, Selector, Datetime, DatetimePlugin, XHeader, XInput, Cell, Loading, XButton, LoadingPlugin, Flexbox, FlexboxItem, Confirm, Alert, Grid, GridItem } from 'vux'
 export default {
   components: {
     PopupRadio,
@@ -92,7 +88,9 @@ export default {
     FlexboxItem,
     Box,
     Confirm,
-    Alert
+    Alert,
+    Grid,
+    GridItem
   },
   /** 1.先取得openid用于显示员工信息
       2.客户状态默认为有效
@@ -754,9 +752,9 @@ export default {
 </script>
 
 <style>
-  .header{
-    margin-top: -1.5em;
-  }
+  /*.header{*/
+    /*margin-top: -1.5em;*/
+  /*}*/
   .autoStyle{
     margin: 0.5em 0.1em 0.5em -1em;
   }
